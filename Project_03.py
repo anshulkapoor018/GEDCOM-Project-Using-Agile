@@ -1,10 +1,9 @@
 #!/usr/bin/env python
-
 """
-Project 02
+Project 03
 """
 
-__author__ = "Anshul Kapoor"
+__author__ = "Anshul Kapoor, Aryan Anmol, Abdulellah Shahrani, Pranay Singh"
 
 # defining possible value level and supported tags as global constant
 VALID_VALUES = {"0": ["INDI", "HEAD", "TRLR", "NOTE", "FAM"],
