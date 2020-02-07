@@ -96,8 +96,7 @@ class Gedcom:
                 except KeyError:  # if invalid level value, throw error
                     raise ValueError("Invalid line found on {}".format(offset + 1))
                 try:
-                    if split_words[1] not in VALID_VALUES[
-                        split_words[0]]:  # check if splitwords[1] which is the tag value is in the global dictionary
+                    if split_words[1] not in VALID_VALUES[split_words[0]]:  # check if splitwords[1] which is the tag value is in the global dictionary
 
                         if len_split_words < 3:  # if no, add N after tag
                             self.tempdata = split_words[1]
@@ -134,8 +133,8 @@ class Gedcom:
         return self.output
 
     def calc_data(self):
-        
         for key in self.userdata:
+            print(self.userdata[key])
             today = date.today()
             try:
                 birthday = self.userdata[key]["BIRTDATE"]
@@ -212,8 +211,9 @@ class Gedcom:
 
 
 def main():
-    file = input("Enter file name: \n")
-    g = Gedcom(file)
+    # file = input("Enter file name: \n")
+    # print(file)
+    g = Gedcom('gedcomData.ged')
     output, userData, familyData = g.analyze()
 
 
