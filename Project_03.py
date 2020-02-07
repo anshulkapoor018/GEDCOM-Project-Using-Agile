@@ -1,80 +1,220 @@
-#!/usr/bin/env python
-"""
-Project 03
-"""
+import pathlib
+import unittest
 
-__author__ = "Anshul Kapoor, Aryan Anmol, Abdulellah Shahrani, Pranay Singh"
+import sys
+from collections import defaultdict
+from prettytable import PrettyTable
+import datetime
+from datetime import date
 
-# defining possible value level and supported tags as global constant
+# define possible values as global constant
 VALID_VALUES = {"0": ["INDI", "HEAD", "TRLR", "NOTE", "FAM"],
                 "1": ["NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "MARR", "HUSB", "WIFE", "CHIL", "DIV"],
                 "2": ["DATE"]}
 
+
 class Gedcom:
-    def __init__(self, path):
-        """ init class operation """
-        self.path = path
-        self.test_file = self.path
-        self.output = []
-        self.gedcom_reading()
 
-    def gedcom_reading(self):
-        """ reads gedcom file line by line and populates output list """
-        file_name = self.test_file
-        try:
-            fp = open(file_name, 'r', encoding='utf-8')
-        except FileNotFoundError as file_not_found:
-            raise file_not_found
+    def __init__(self, file):
+        self.file = file
+        self.directory = pathlib.Path(__file__).parent
+        self.output = ""
+        self.userdata = defaultdict(dict)
+        self.familydata = defaultdict(dict)
+        self.tempdata = ""
+        self.ptUsers = PrettyTable()
+        self.ptFamily = PrettyTable()
+
+    def analyze(self):
+        """
+        Function to check if file is valid
+        """
+        if self.file.endswith("ged"):
+            read_lines = self.open_file()
+            self.parse_file(read_lines)
+            self.calc_data()
+            return self.output, self.userdata, self.familydata
         else:
-            with fp:
-                for line in fp:
-                    self.output.append("--> " + line.strip('\n'))
-                    current_line = line.strip().split(' ')
-                    if len(current_line) > 2:
-                        if current_line[0] not in ["0", "1", "2"]:
-                            current_line.insert(2, 'N')
-                        elif current_line[0] == '0' and current_line[1] == 'INDI' or current_line[1] == 'FAM':
-                            current_line.insert(2, 'N')
-                        elif current_line[0] == '0' and current_line[2] == 'INDI' or current_line[2] == 'FAM':
-                            element = current_line.pop(1)
-                            current_line.insert(2, element)
-                            current_line.insert(2, 'Y')
-                        elif current_line[1] in VALID_VALUES[current_line[0]]:
-                            current_line.insert(2, 'Y')
+            return "Can only analyze gedcom files. Enter a file ending with .ged"
+
+    def open_file(self):
+        """
+        Function to try and open the file
+        :return: Returns lines in the file if file is valid
+        """
+        try:
+            with open(self.file, 'r') as ged:
+                lines = ged.readlines()
+        except FileNotFoundError:
+            print("{} Not found in {}".format(self.file, self.directory))
+            sys.exit()
+        return lines
+
+    def parse_file(self, read_lines):
+        """
+        Function to read input file line by line and generate output
+        :param read_lines: list
+        :return: output as string
+        """
+
+        for offset, line in enumerate(read_lines):
+            line = line.strip()
+            if line == "":  # if last line is reached, return output
+                return self.output
+            split_words = line.split(" ")
+            len_split_words = len(split_words)
+            if split_words[0] in ['0', '1', '2']:  # splitwords[0] will get the level value and check if it is 0 or 1 or 2
+                self.output += "-->" + " " + line + "\n"  # append arrow to output
+                if split_words[1] == "F12":
+                    if 1:
+                        pass
+                if len_split_words > 3:  # if there is a big name or date, append it to a single value in list
+                    split_words[2] += " " + " ".join(split_words[3:])
+                try:
+                    if split_words[0] == '0':  # if it is defining INDI or FAM, change order
+
+                        if split_words[1] in ["HEAD", "TRLR"]:
+                            if len_split_words > 2:
+                                self.output += "<--" + " " + split_words[0] + "|" + split_words[1] + "|" + "Y" + "|" + \
+                                               split_words[2] + "\n"
+                                continue
+                            self.output += "<--" + " " + split_words[0] + "|" + split_words[1] + "|" + "Y" + "|" + "\n"
+                            continue
+                        elif split_words[2] == "INDI":
+                            self.output += "<--" + " " + split_words[0] + "|" + split_words[2] + "|" + "Y" + "|" + \
+                                           split_words[1] + "\n"
+                            self.userdata[split_words[1]] = {}
+                            curr_id = split_words[1]
+                            continue
+                        elif split_words[2] == "FAM":
+                            self.output += "<--" + " " + split_words[0] + "|" + split_words[2] + "|" + "Y" + "|" + \
+                                           split_words[1] + "\n"
+                            self.familydata[split_words[1]] = {}
+                            self.familydata[split_words[1]]["CHIL"] = []
+                            curr_id = split_words[1]
+                            continue
+                except KeyError:  # if invalid level value, throw error
+                    raise ValueError("Invalid line found on {}".format(offset + 1))
+                try:
+                    if split_words[1] not in VALID_VALUES[
+                        split_words[0]]:  # check if splitwords[1] which is the tag value is in the global dictionary
+
+                        if len_split_words < 3:  # if no, add N after tag
+                            self.tempdata = split_words[1]
+                            self.output += "<--" + " " + split_words[0] + "|" + split_words[1] + "|" + "N" + "|" + "\n"
                         else:
-                            current_line.insert(2, 'N')
-
-                    elif len(current_line) == 2:
-                        if current_line[0] not in ["0", "1", "2"]:
-                            current_line.insert(2, 'N')
+                            self.output += "<--" + " " + split_words[0] + "|" + split_words[1] + "|" + "N" + "|" + \
+                                           split_words[2] + "\n"
+                    else:  # if yes add Y after tag
+                        if len_split_words < 3:
+                            self.tempdata = split_words[1]
+                            self.output += "<--" + " " + split_words[0] + "|" + split_words[1] + "|" + "Y" + "|" + "\n"
                         else:
-                            if current_line[0] == '0' and current_line[1] == 'INDI' or current_line[1] == 'FAM':
-                                current_line.insert(2, 'N')
-                            elif current_line[1] in VALID_VALUES[current_line[0]]:
-                                current_line.insert(2, 'Y')
-                            else:
-                                current_line.insert(2, 'N')
 
-                    result = '|'.join(current_line[0:3])
-                    result1 = ' '.join(current_line[3:])
-                    self.output.append("<-- " + result + '|' + result1)
+                            self.output += "<--" + " " + split_words[0] + "|" + split_words[1] + "|" + "Y" + "|" + \
+                                           split_words[2] + "\n"
+                            if split_words[1] == "NOTE":
+                                continue
+                            if split_words[1] in ["HUSB", "WIFE"]:
+                                self.familydata[curr_id][split_words[1]] = split_words[2]
+                                continue
+                            if split_words[1] == "CHIL":
+                                self.familydata[curr_id][split_words[1]].append(split_words[2])
+                                continue
+                            if split_words[0] == "2":
+                                self.userdata[curr_id][self.tempdata + split_words[1]] = split_words[2]
+                                continue
+                            self.userdata[curr_id][split_words[1]] = split_words[2]
+                except KeyError:  # if invalid level value, throw eror
+                    print("Invalid line found on {}".format(offset + 1))
 
-def ask_gedcomfile(prompt='Enter file name: '):
-    name = input(prompt)
-    if name[-4:] in {'.ged'}:
-        return name
-    return ask_gedcomfile(prompt='The file name has to end in ".ged", please retry again: ')
+            else:
+                return "Invalid line on {}".format(line)
+
+        return self.output
+
+    def calc_data(self):
+        
+        for key in self.userdata:
+            today = date.today()
+            try:
+                birthday = self.userdata[key]["BIRTDATE"]
+                born_date = datetime.datetime.strptime(birthday, '%d %b %Y')
+            except ValueError:
+                print("Invalid date found")
+                sys.exit()
+
+            try:
+                death_date = self.userdata[key]["DEATDATE"]
+                deathday = self.userdata[key]["DEATDATE"]
+                death_date = datetime.datetime.strptime(deathday, '%d %b %Y')
+                alive_status = False
+            except KeyError:
+                alive_status = True
+            self.userdata[key]["ALIVE"] = alive_status
+            if alive_status is True:
+                age = today.year - born_date.year
+            else:
+                age = death_date.year - born_date.year
+            self.userdata[key]["AGE"] = age
+
+        self.prettyTableHelperFunction()
+
+    def prettyTableHelperFunction(self):
+
+        self.ptUsers.field_names = ["ID", "NAME", "GENDER", "BIRTH DATE", "AGE", "ALIVE", "DEATH", "CHILD", "SPOUSE"]
+
+        for key in sorted(self.userdata.keys()):
+            value = self.userdata[key]
+            name = value["NAME"]
+            gender = value["SEX"]
+            birthdate = value["BIRTDATE"]
+            age = value["AGE"]
+            alive = value["ALIVE"]
+            try:
+                death = value["DEATDATE"]
+            except KeyError:
+                death = "NA"
+            try:
+                child = value["CHILD"]
+            except KeyError:
+                child = "NA"
+            try:
+                spouse = value["SPOUSE"]
+            except KeyError:
+                spouse = "NA"
+            self.ptUsers.add_row([key, name, gender, birthdate, age, alive, death, child, spouse])
+
+        print(self.ptUsers)
+
+        self.ptFamily.field_names = ["ID", "MARRIAGE DATE", "DIVORCE DATE", "HUSBAND ID",
+                                     "HUSBAND NAME", "WIFE ID", "WIFE NAME", "CHILDREN"]
+
+        for key in sorted(self.familydata.keys()):
+
+            value = self.familydata[key]
+            husband_id = value["HUSB"]
+            husband_name = self.userdata[husband_id]["NAME"]
+            marriage = self.userdata[husband_id]["MARRDATE"]
+            wife_id = value["WIFE"]
+            wife_name = self.userdata[wife_id]["NAME"]
+            try:
+                divorce = self.userdata[husband_id]["DIVDATE"]
+            except KeyError:
+                divorce = "NA"
+            try:
+                child = value["CHIL"]
+            except KeyError:
+                child = "NA"
+            self.ptFamily.add_row([key, marriage, divorce, husband_id, husband_name, wife_id, wife_name, child])
+
+        print(self.ptFamily)
 
 
 def main():
-    file_path = ask_gedcomfile()
-
-    try:
-        gedcom_data = Gedcom(file_path)
-        for value in gedcom_data.output:
-            print(value)
-    except FileNotFoundError:
-        print(f"No File found at path --> {file_path}")
+    file = input("Enter file name: \n")
+    g = Gedcom(file)
+    output, userData, familyData = g.analyze()
 
 
 if __name__ == '__main__':
