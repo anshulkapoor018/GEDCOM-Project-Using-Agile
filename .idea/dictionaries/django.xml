@@ -1,11 +1,22 @@
 <component name="ProjectDictionaryState">
   <dictionary name="django">
     <words>
+      <w>birt</w>
+      <w>birtdate</w>
       <w>birthdate</w>
+      <w>chil</w>
+      <w>deat</w>
+      <w>donothing</w>
+      <w>famc</w>
       <w>familydata</w>
+      <w>fams</w>
       <w>gedcom</w>
+      <w>husb</w>
+      <w>indi</w>
+      <w>marr</w>
       <w>splitwords</w>
       <w>tempdata</w>
+      <w>trlr</w>
       <w>userdata</w>
     </words>
   </dictionary>
