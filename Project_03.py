@@ -4,11 +4,26 @@ from collections import defaultdict
 from prettytable import PrettyTable
 import datetime
 from datetime import date
+import unittest
+
+
+class TestMarriage(unittest.TestCase):
+    def test_divorce(self):
+        """ to test if the divorce date is not before marriage date """
+        with self.assertRaises(KeyError):
+            Gedcom.check_divorce(Gedcom("gedcomData.ged"), "1 JAN 1930", "12 JUN 2000", "test")
+
+    def test_death_date(self):
+        """ to test if the death date is not before marriage date """
+        with self.assertRaises(KeyError):
+            Gedcom.checkMarriageBeforeDeath(Gedcom("gedcomData.ged"), "1 JAN 1930", "12 JUN 2000", "test")
+
 
 # possible values as global constant Level Wise
 VALID_VALUES = {"0": ["INDI", "HEAD", "TRLR", "NOTE", "FAM"],
                 "1": ["NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "MARR", "HUSB", "WIFE", "CHIL", "DIV"],
                 "2": ["DATE"]}
+
 
 class Gedcom:
 
@@ -26,7 +41,6 @@ class Gedcom:
 
         self.prettytableindividuals = PrettyTable()
         self.prettytablefamily = PrettyTable()
-
 
     def analyze_gedcom_file(self):
         """ Function to check if file is valid """
@@ -116,6 +130,18 @@ class Gedcom:
             else:
                 age = death_date.year - born_date.year
             self.individualdata[key]["AGE"] = age
+
+            try:
+                self.check_divorce(self.individualdata[key]["DIVDATE"],
+                                   self.individualdata[key]["MARRDATE"], key)
+            except KeyError:
+                raise KeyError("Error: divorce can't be before marriage for", key)
+
+            try:
+                self.checkMarriageBeforeDeath(self.individualdata[key]["DEATDATE"],self.individualdata[key]["MARRDATE"],
+                                              key)
+            except KeyError:
+                raise KeyError("Error: marriage can't be after death for ", key)
 
         error = self.prettyTableHelperFunction()
         if error is None:
@@ -224,7 +250,6 @@ class Gedcom:
 
             try:
                 divorce = self.individualdata[husband_id]["DIVDATE"]
-
             except KeyError:
                 divorce = "NA"
 
@@ -232,7 +257,28 @@ class Gedcom:
                 child = value["CHIL"]
             except KeyError:
                 child = "NA"
-            self.prettytablefamily.add_row([key, marriage, divorce, husband_id, husband_name, wife_id, wife_name, child])
+            self.prettytablefamily.add_row(
+                [key, marriage, divorce, husband_id, husband_name, wife_id, wife_name, child])
+
+    def check_divorce(self, divorce, marriage, key):
+        """ if the divorce is before marriage, raise KeyError """
+        div_date = datetime.datetime.strptime(divorce, '%d %b %Y')
+        marr_date = datetime.datetime.strptime(marriage, '%d %b %Y')
+        result = div_date - marr_date
+
+        if result.days < 0:
+            self.errorlog[key] += 1
+            raise KeyError
+
+    def checkMarriageBeforeDeath(self, death_date, marriage, key):
+        """ if the death is before marriage, raise KeyError """
+        death_date = datetime.datetime.strptime(death_date, '%d %b %Y')
+        marr_date = datetime.datetime.strptime(marriage, '%d %b %Y')
+        result = death_date - marr_date
+
+        if result.days < 0:
+            self.errorlog[key] += 1
+            raise KeyError
 
     def donothing(self, nothing):
         pass
@@ -247,4 +293,5 @@ def main():
 
 
 if __name__ == '__main__':
+    unittest.main(exit=False, verbosity=2)
     main()
