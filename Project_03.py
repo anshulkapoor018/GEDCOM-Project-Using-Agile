@@ -22,7 +22,7 @@ class Gedcom:
 
         self.individualdata = defaultdict(dict)
         self.familydata = defaultdict(dict)
-        self.errorlog = defaultdict(int)
+        self.errorLog = defaultdict(int)
 
         self.prettytableindividuals = PrettyTable()
         self.prettytablefamily = PrettyTable()
@@ -32,8 +32,9 @@ class Gedcom:
         """ Function to check if file is valid """
         if self.file.endswith("ged"):
             self.check_gedcom_file(self.open_file())
-            self.date_calculation()
-            return self.output, self.individualdata, self.familydata
+            # return self.output, self.individualdata, self.familydata
+            error, errorLog = self.date_calculation()
+            return error, errorLog
         else:
             return "Can only analyze gedcom files. Enter a file ending with .ged"
 
@@ -92,24 +93,43 @@ class Gedcom:
     def date_calculation(self):
         """ Helper function to Calculate Age and Date with format '%d %b %Y' """
         for key in self.individualdata:
+            if "DEATDATE" not in self.individualdata[key].keys():
+                self.individualdata[key]["DEATDATE"] = "NA"
+                alive_status = True
+            if "MARRDATE" not in self.individualdata[key].keys():
+                self.individualdata[key]["MARRDATE"] = "NA"
+            if "DIVDATE" not in self.individualdata[key].keys():
+                self.individualdata[key]["DIVDATE"] = "NA"
+
             today = date.today()
-            try:
+            try:  # To check if birthdate is not in future
                 birthday = self.individualdata[key]["BIRTDATE"]
                 born_date = datetime.datetime.strptime(birthday, '%d %b %Y')
+                if born_date > datetime.datetime.now():
+                    print("ERROR: US01 INDIVIDUAL () {} has Birthdate in future".format(key, self.individualdata[key]["NAME"]))
+                    self.errorLog["US01_DateAfterCurrent"] += 1
             except ValueError:
-                print("Invalid date found")
+                print("Invalid birthdate Value for {}".format(self.individualdata[key]["NAME"]))
                 sys.exit()
             except KeyError:
-                print(self.individualdata[key])
-                print("Invalid data for {}".format(self.individualdata[key]))
+                print("Invalid data for {}".format(self.individualdata[key]["NAME"]))
                 sys.exit()
-            try:
-                death_date = self.individualdata[key]["DEATDATE"]
-                deathday = self.individualdata[key]["DEATDATE"]
-                death_date = datetime.datetime.strptime(deathday, '%d %b %Y')
-                alive_status = False
-            except KeyError:
-                alive_status = True
+
+            if self.individualdata[key]["DEATDATE"] != "NA":
+                try:  # To check if deathDate is not in future
+                    death_date = self.individualdata[key]["DEATDATE"]
+                    deathday = self.individualdata[key]["DEATDATE"]
+                    death_date = datetime.datetime.strptime(deathday, '%d %b %Y')
+                    if death_date > datetime.datetime.now():
+                        print("ERROR: US01 INDIVIDUAL () {} has Death Date in future".format(key, self.individualdata[key]["NAME"]))
+                        self.errorLog["US01_DateAfterCurrent"] += 1
+                    alive_status = False
+                except ValueError:
+                    print("Invalid death date Value for {}".format(self.individualdata[key]["NAME"]))
+                    sys.exit()
+                except KeyError:
+                    alive_status = True
+
             self.individualdata[key]["ALIVE"] = alive_status
             if alive_status is True:
                 age = today.year - born_date.year
@@ -117,10 +137,38 @@ class Gedcom:
                 age = death_date.year - born_date.year
             self.individualdata[key]["AGE"] = age
 
+            if self.individualdata[key]["MARRDATE"] != "NA":
+                try:  # To check if marriage Date is not in future
+                    marriageDate = self.individualdata[key]["MARRDATE"]
+                    marr_date = datetime.datetime.strptime(marriageDate, '%d %b %Y')
+                    if marr_date > datetime.datetime.now():
+                        print("ERROR: US01 INDIVIDUAL () {} has marriage Date in future".format(key, self.individualdata[key]["NAME"]))
+                        self.errorLog["US01_DateAfterCurrent"] += 1
+                except ValueError:
+                    print("Invalid marriage date Value for {}".format(self.individualdata[key]["NAME"]))
+                    sys.exit()
+                except KeyError:
+                    print("Invalid data for {}".format(self.individualdata[key]["NAME"]))
+                    sys.exit()
+
+            if self.individualdata[key]["DIVDATE"] != "NA":
+                try:  # To check if divorce Date is not in future
+                    divorceDate = self.individualdata[key]["DIVDATE"]
+                    div_date = datetime.datetime.strptime(divorceDate, '%d %b %Y')
+                    if div_date > datetime.datetime.now():
+                        print("ERROR: US01 INDIVIDUAL () {} has divorce Date in future".format(key, self.individualdata[key]["NAME"]))
+                        self.errorLog["US01_DateAfterCurrent"] += 1
+                except ValueError:
+                    print("Invalid divorce date Value for {}".format(self.individualdata[key]["NAME"]))
+                    sys.exit()
+                except KeyError:
+                    print("Invalid data for {}".format(self.individualdata[key]["NAME"]))
+                    sys.exit()
+
         error = self.prettyTableHelperFunction()
         if error is None:
             error = "No errors found"
-        return error, self.errorlog
+        return error, self.errorLog
 
     def parse_gedcom_file(self, line, split_words, len_split_words, offset):
         """ Helper function to parse gedcom file and extract data """
@@ -239,11 +287,11 @@ class Gedcom:
 
 
 def main():
-    file_name = input("Enter file name: ")
-    g = Gedcom(file_name)
-    output, userData, familyData = g.analyze_gedcom_file()
-    print(g.prettytableindividuals)
-    print(g.prettytablefamily)
+    # file_name = input("Enter file name: ")
+    g = Gedcom("gedcomData.ged")
+    print(g.analyze_gedcom_file())
+    # print(g.prettytableindividuals)
+    # print(g.prettytablefamily)
 
 
 if __name__ == '__main__':
