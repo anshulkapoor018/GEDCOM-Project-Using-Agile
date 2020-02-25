@@ -142,8 +142,11 @@ class Gedcom:
                     marriageDate = self.individualdata[key]["MARRDATE"]
                     marr_date = datetime.datetime.strptime(marriageDate, '%d %b %Y')
                     if marr_date > datetime.datetime.now():
-                        print("ERROR: US01 INDIVIDUAL () {} has marriage Date in future".format(key, self.individualdata[key]["NAME"]))
+                        print("ERROR: US01 INDIVIDUAL {} has marriage Date in future".format(key, self.individualdata[key]["NAME"]))
                         self.errorLog["US01_DateAfterCurrent"] += 1
+                    if marr_date < datetime.datetime.strptime(self.individualdata[key]["BIRTDATE"], '%d %b %Y'):
+                        print("ERROR: US02 INDIVIDUAL {} has marriage Date before Birth".format(key, self.individualdata[key]["NAME"]))
+                        self.errorLog["US02_BirthBeforeMarriage"] += 1
                 except ValueError:
                     print("Invalid marriage date Value for {}".format(self.individualdata[key]["NAME"]))
                     sys.exit()
@@ -164,6 +167,7 @@ class Gedcom:
                 except KeyError:
                     print("Invalid data for {}".format(self.individualdata[key]["NAME"]))
                     sys.exit()
+
 
         error = self.prettyTableHelperFunction()
         if error is None:
@@ -290,7 +294,7 @@ def main():
     # file_name = input("Enter file name: ")
     g = Gedcom("gedcomData.ged")
     print(g.analyze_gedcom_file())
-    print(g.prettytableindividuals)
+    # print(g.prettytableindividuals)
     # print(g.prettytablefamily)
 
 
