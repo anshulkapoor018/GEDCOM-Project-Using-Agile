@@ -234,6 +234,8 @@ class Gedcom:
                 child = "NA"
             self.prettytablefamily.add_row([key, marriage, divorce, husband_id, husband_name, wife_id, wife_name, child])
 
+
+    # Pranays work
     def donothing(self, nothing):
         pass
 
