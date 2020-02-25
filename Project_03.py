@@ -290,7 +290,7 @@ def main():
     # file_name = input("Enter file name: ")
     g = Gedcom("gedcomData.ged")
     print(g.analyze_gedcom_file())
-    # print(g.prettytableindividuals)
+    print(g.prettytableindividuals)
     # print(g.prettytablefamily)
 
 
