@@ -1,4 +1,5 @@
 import pathlib
+import unittest
 import sys
 from collections import defaultdict
 from prettytable import PrettyTable
@@ -33,8 +34,8 @@ class Gedcom:
         if self.file.endswith("ged"):
             self.check_gedcom_file(self.open_file())
             # return self.output, self.individualdata, self.familydata
-            error, errorLog = self.date_calculation()
-            return error, errorLog
+            errorLog = self.date_calculation()
+            return errorLog
         else:
             return "Can only analyze gedcom files. Enter a file ending with .ged"
 
@@ -102,7 +103,7 @@ class Gedcom:
                 self.individualdata[key]["DIVDATE"] = "NA"
 
             today = date.today()
-            try:  # To check if birthdate is not in future
+            try:    # To check if birthdate is not in future
                 birthday = self.individualdata[key]["BIRTDATE"]
                 born_date = datetime.datetime.strptime(birthday, '%d %b %Y')
                 if born_date > datetime.datetime.now():
@@ -169,10 +170,8 @@ class Gedcom:
                     sys.exit()
 
 
-        error = self.prettyTableHelperFunction()
-        if error is None:
-            error = "No errors found"
-        return error, self.errorLog
+        self.prettyTableHelperFunction()
+        return self.errorLog
 
     def parse_gedcom_file(self, line, split_words, len_split_words, offset):
         """ Helper function to parse gedcom file and extract data """
@@ -289,14 +288,33 @@ class Gedcom:
     def donothing(self, nothing):
         pass
 
+class TestGedcom(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        """
+        Set up objects with filenames
+        """
+        cls.x = Gedcom("US01_US02_testing.ged",)
+        cls.errorlog = cls.x.analyze_gedcom_file()
+
+
+    def test_date_before_current_date(self):
+        """ Test if Dates (birth, marriage, divorce, death) should not be after the current date """
+        self.assertNotEqual(self.errorlog["US01_DateAfterCurrent"], 0)  # There are errors in the gedcom Test file
+
+    def test_marriage_before_birth_date(self):
+        """ Test if marriage date is before birth date """
+        self.assertNotEqual(self.errorlog["US02_BirthBeforeMarriage"], 0)  # There are errors in the gedcom Test file
+
 
 def main():
-    # file_name = input("Enter file name: ")
-    g = Gedcom("gedcomData.ged")
+    file_name = input("Enter file name: ")
+    g = Gedcom(file_name)
     print(g.analyze_gedcom_file())
-    # print(g.prettytableindividuals)
-    # print(g.prettytablefamily)
+    print(g.prettytableindividuals)
+    print(g.prettytablefamily)
 
 
 if __name__ == '__main__':
-    main()
+    unittest.main(exit=False, verbosity=2)
+    # main()
