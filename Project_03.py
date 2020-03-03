@@ -355,12 +355,11 @@ class Gedcom:
 class TestGedcom(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        """
-        Set up objects with filenames
-        """
+        """ Set up objects with filenames """
         cls.x = Gedcom("US01_US02_testing.ged")
         cls.errorlog = cls.x.analyze_gedcom_file()
 
+    # Run after changing the setUpClass method to testing File -> "US01_US02_testing.ged"
     def test_date_before_current_date(self):
         """ Test if Dates (birth, marriage, divorce, death) should not be after the current date """
         self.assertNotEqual(self.errorlog["US01_DateAfterCurrent"], 0)  # There are errors in the gedcom Test file
@@ -369,6 +368,7 @@ class TestGedcom(unittest.TestCase):
         """ Test if marriage date is before birth date """
         self.assertNotEqual(self.errorlog["US02_BirthBeforeMarriage"], 0)  # There are errors in the gedcom Test file
 
+    # Run after changing the setUpClass method to testing File -> "US05_US06_testing.ged"
     # def test_divorce_before_death(self):
     #     """ to test if the divorce date is not before marriage date """
     #     # with self.assertRaises(KeyError):
@@ -381,6 +381,7 @@ class TestGedcom(unittest.TestCase):
     #     #     Gedcom.checkMarriageBeforeDeath(Gedcom("gedcomData.ged"), "1 JAN 1930", "12 JUN 2000", "test")
     #     self.assertNotEqual(self.errorlog["US05_checkMarriageBeforeDeath"], 0)
 
+    # Run after changing the setUpClass method to testing File -> "US07_US08_testing.ged"
     # def test_age_150(self):
     #     """ Test if Dates (birth, marriage, divorce, death) should not be after the current date """
     #     self.assertNotEqual(self.errorlog["US07_AgeLessOneFifty"], 0)  # There are errors in the gedcom Test file
