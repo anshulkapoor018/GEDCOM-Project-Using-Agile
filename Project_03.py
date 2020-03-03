@@ -2,7 +2,7 @@ import pathlib
 import unittest
 import sys
 from collections import defaultdict
-# from prettytable import PrettyTable
+from prettytable import PrettyTable
 import datetime
 from datetime import date
 
@@ -171,7 +171,7 @@ class Gedcom:
 
             if self.individualdata[key]["DEATDATE"] != "NA":
                 try:    # To check if death before birth
-                    if self.individualdata[key]["DEATH"] > self.individualdata[key]["BIRTDATE"]:
+                    if self.individualdata[key]["DEATDATE"] > self.individualdata[key]["BIRTDATE"]:
                         print("ERROR: US03 INDIVIDUAL () {} has death date before birth date".format(key, self.individualdata[key]["NAME"]))
                         self.errorLog["US03_death_before_birth"] += 1
                 except ValueError:
