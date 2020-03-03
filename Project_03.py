@@ -138,6 +138,17 @@ class Gedcom:
                 age = death_date.year - born_date.year
             self.individualdata[key]["AGE"] = age
 
+            try:
+                if self.individualdata[key]["DIVDATE"] != "NA" and self.individualdata[key]["DEATDATE"] != "NA":
+                    self.check_divorce(self.individualdata[key]["DIVDATE"], self.individualdata[key]["DEATDATE"], key)
+            except KeyError:
+                raise KeyError("Error: divorce can't be after death date for ", key)
+
+            try:
+                if self.individualdata[key]["DIVDATE"] != "NA" and self.individualdata[key]["DEATDATE"] != "NA":
+                    self.checkMarriageBeforeDeath(self.individualdata[key]["DEATDATE"], self.individualdata[key]["MARRDATE"], key)
+            except KeyError:
+                raise KeyError("Error: marriage can't be after death for ", key)
 
 
             if self.individualdata[key]["MARRDATE"] != "NA":
@@ -287,6 +298,26 @@ class Gedcom:
                 child = "NA"
             self.prettytablefamily.add_row([key, marriage, divorce, husband_id, husband_name, wife_id, wife_name, child])
 
+    def check_divorce(self, divorce, death, key):
+        """ if the divorce is after death, raise KeyError """
+        div_date = datetime.datetime.strptime(divorce, '%d %b %Y')
+        death_date = datetime.datetime.strptime(death, '%d %b %Y')
+        result = death_date - div_date
+
+        if result.days < 0:
+            self.errorLog["check_divorce"] += 1
+            raise KeyError
+
+    def checkMarriageBeforeDeath(self, death_date, marriage, key):
+        """ if the death is before marriage, raise KeyError """
+        death_date = datetime.datetime.strptime(death_date, '%d %b %Y')
+        marr_date = datetime.datetime.strptime(marriage, '%d %b %Y')
+        result = death_date - marr_date
+
+        if result.days < 0:
+            self.errorLog["checkMarriageBeforeDeath"] += 1
+            raise KeyError
+
     def donothing(self, nothing):
         pass
 
@@ -307,6 +338,16 @@ class TestGedcom(unittest.TestCase):
     def test_marriage_before_birth_date(self):
         """ Test if marriage date is before birth date """
         self.assertNotEqual(self.errorlog["US02_BirthBeforeMarriage"], 0)  # There are errors in the gedcom Test file
+
+    def test_divorce(self):
+        """ to test if the divorce date is not before marriage date """
+        with self.assertRaises(KeyError):
+            Gedcom.check_divorce(Gedcom("gedcomData.ged"), "1 JAN 2000", "12 JUN 1999", "test")
+
+    def test_death_date(self):
+        """ to test if the death date is not before marriage date """
+        with self.assertRaises(KeyError):
+            Gedcom.checkMarriageBeforeDeath(Gedcom("gedcomData.ged"), "1 JAN 1930", "12 JUN 2000", "test")
 
 
 def main():
