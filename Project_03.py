@@ -141,6 +141,27 @@ class Gedcom:
                 age = death_date.year - born_date.year
             self.individualdata[key]["AGE"] = age
 
+            try:    # if a person is alive and older than 150 years
+                if (alive_status == True and age > 150):
+                    print("ERROR: US07 INDIVIDUAL () {} has AGE greater than 150 ".format(key, self.individualdata[key]["NAME"]))
+                    self.errorLog["US07_AgeLessOneFifty"] += 1
+            except ValueError:
+                print("Invalid Age Value for {}".format(self.individualdata[key]["NAME"]))
+                sys.exit()
+            except KeyError:
+                print("Invalid data for {}".format(self.individualdata[key]["NAME"]))
+                sys.exit()
+
+            birthday = self.individualdata[key]["BIRTDATE"]
+            try:    # check if marriage before 14
+                marriageday = self.individualdata[key]["MARRDATE"]
+            except KeyError:
+                marriageDate = "NA"
+
+            if (marriageday != "NA" and (int(marriageday.split()[2]) - int(birthday.split()[2])) < 14):
+                print("ERROR: US10 INDIVIDUAL () {} has married before the age of 14 ".format(key, self.individualdata[key]["NAME"]))
+                self.errorLog["US10_MarriageBefore14"] += 1
+
             try:
                 if self.individualdata[key]["MARRDATE"] != "NA" and self.individualdata[key]["DEATDATE"] != "NA":
                     self.checkMarriageBeforeDeath(self.individualdata[key]["DEATDATE"], self.individualdata[key]["MARRDATE"], key)
@@ -337,29 +358,36 @@ class TestGedcom(unittest.TestCase):
         """
         Set up objects with filenames
         """
-        cls.x = Gedcom("US05_US06_testing.ged")
+        cls.x = Gedcom("US01_US02_testing.ged")
         cls.errorlog = cls.x.analyze_gedcom_file()
 
-    # def test_date_before_current_date(self):
-    #     """ Test if Dates (birth, marriage, divorce, death) should not be after the current date """
-    #     self.assertNotEqual(self.errorlog["US01_DateAfterCurrent"], 0)  # There are errors in the gedcom Test file
+    def test_date_before_current_date(self):
+        """ Test if Dates (birth, marriage, divorce, death) should not be after the current date """
+        self.assertNotEqual(self.errorlog["US01_DateAfterCurrent"], 0)  # There are errors in the gedcom Test file
+
+    def test_marriage_before_birth_date(self):
+        """ Test if marriage date is before birth date """
+        self.assertNotEqual(self.errorlog["US02_BirthBeforeMarriage"], 0)  # There are errors in the gedcom Test file
+
+    # def test_divorce_before_death(self):
+    #     """ to test if the divorce date is not before marriage date """
+    #     # with self.assertRaises(KeyError):
+    #     #     Gedcom.check_divorce(Gedcom("gedcomData.ged"), "1 JAN 2000", "12 JUN 1999", "test")
+    #     self.assertNotEqual(self.errorlog["US06_check_divorce"], 0)
     #
-    # def test_marriage_before_birth_date(self):
-    #     """ Test if marriage date is before birth date """
-    #     self.assertNotEqual(self.errorlog["US02_BirthBeforeMarriage"], 0)  # There are errors in the gedcom Test file
+    # def test_marriage_before_death_date(self):
+    #     """ to test if the death date is not before marriage date """
+    #     # with self.assertRaises(KeyError):
+    #     #     Gedcom.checkMarriageBeforeDeath(Gedcom("gedcomData.ged"), "1 JAN 1930", "12 JUN 2000", "test")
+    #     self.assertNotEqual(self.errorlog["US05_checkMarriageBeforeDeath"], 0)
 
-    def test_divorce_before_death(self):
-        """ to test if the divorce date is not before marriage date """
-        # with self.assertRaises(KeyError):
-        #     Gedcom.check_divorce(Gedcom("gedcomData.ged"), "1 JAN 2000", "12 JUN 1999", "test")
-        self.assertNotEqual(self.errorlog["US06_check_divorce"], 0)
-
-    def test_marriage_before_death_date(self):
-        """ to test if the death date is not before marriage date """
-        # with self.assertRaises(KeyError):
-        #     Gedcom.checkMarriageBeforeDeath(Gedcom("gedcomData.ged"), "1 JAN 1930", "12 JUN 2000", "test")
-        self.assertNotEqual(self.errorlog["US05_checkMarriageBeforeDeath"], 0)
-
+    # def test_age_150(self):
+    #     """ Test if Dates (birth, marriage, divorce, death) should not be after the current date """
+    #     self.assertNotEqual(self.errorlog["US07_AgeLessOneFifty"], 0)  # There are errors in the gedcom Test file
+    #
+    # def test_married_before_14(self):
+    #     """ Test if Dates (birth, marriage, divorce, death) should not be after the current date """
+    #     self.assertNotEqual(self.errorlog["US10_MarriageBefore14"], 0)  # There are errors in the gedcom Test file
 
 def main():
     file_name = input("Enter file name: ")
