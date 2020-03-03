@@ -157,7 +157,7 @@ class Gedcom:
 
             if (marriageday != "NA" and (int(marriageday.split()[2]) - int(birthday.split()[2])) < 14):
                 print("ERROR: US10 INDIVIDUAL () {} has married before the age of 14 ".format(key, self.individualdata[key]["NAME"]))
-                self.errorLog["MarriageBefore14"] += 1
+                self.errorLog["US10_MarriageBefore14"] += 1
 
 
             if self.individualdata[key]["MARRDATE"] != "NA":
