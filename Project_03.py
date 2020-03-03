@@ -314,21 +314,38 @@ class Gedcom:
 
             value = self.familydata[key]
 
-            husband_id = value["HUSB"]
-            wife_id = value["WIFE"]
-            children = value["CHIL"]
-
-            husband_name = self.individualdata[husband_id]["NAME"]
+            husband_individiual_id = value["HUSB"]
+            wife_individiual_id = value["WIFE"]
+            child_individiual_id = value["CHIL"]
 
             try:
-                marriage = self.individualdata[husband_id]["MARRDATE"]
+                marriage = self.individualdata[husband_individiual_id]["MARRDATE"]
             except KeyError:
                 return "No Marriage date found"
 
-            wife_name = self.individualdata[wife_id]["NAME"]
+            wife_name = self.individualdata[wife_individiual_id]["NAME"]
+            wife_firstname, wife_lastname = wife_name.split()
 
             try:
-                divorce = self.individualdata[husband_id]["DIVDATE"]
+                divorce = self.individualdata[husband_individiual_id]["DIVDATE"]
+                div_husband = self.individualdata[wife_individiual_id]["DIVDATE"]
+                div_wife = self.individualdata[wife_individiual_id]["DIVDATE"]
+            except KeyError:
+                divorce = "NA"
+                div_husband = "NA"
+                div_wife = "NA"
+
+            husband_name = self.individualdata[husband_individiual_id]["NAME"]
+
+            try:
+                marriage = self.individualdata[husband_individiual_id]["MARRDATE"]
+            except KeyError:
+                return "No Marriage date found"
+
+            wife_name = self.individualdata[wife_individiual_id]["NAME"]
+
+            try:
+                divorce = self.individualdata[husband_individiual_id]["DIVDATE"]
 
             except KeyError:
                 divorce = "NA"
@@ -337,8 +354,14 @@ class Gedcom:
                 child = value["CHIL"]
             except KeyError:
                 child = "NA"
-            self.prettytablefamily.add_row(
-                [key, marriage, divorce, husband_id, husband_name, wife_id, wife_name, child])
+
+            if (divorce != "NA") and (div_husband != "NA") and (div_wife != "NA"):
+                if (datetime.datetime.strptime(marriage, '%d %b %Y') > datetime.datetime.strptime(self.individualdata[husband_individiual_id]["DIVDATE"], '%d %b %Y')) \
+                        or (datetime.datetime.strptime(self.individualdata[wife_individiual_id]["MARRDATE"], '%d %b %Y') > datetime.datetime.strptime(self.individualdata[wife_individiual_id]["DIVDATE"], '%d %b %Y')):
+                    print("ERROR: US04 INDIVIDUAL {} {} has Marriage After Divorce".format(husband_individiual_id, husband_name))
+                    self.errorLog["US04_MarriageOccursBeforeDivorce"] += 1
+
+            self.prettytablefamily.add_row([key, marriage, divorce, husband_individiual_id, husband_name, wife_individiual_id, wife_name, child])
 
     def checkMarriageBeforeDeath(self, death_date, marriage, key):
         """ if the death is before marriage, raise KeyError """
@@ -380,14 +403,14 @@ class TestGedcom(unittest.TestCase):
     #     """ Test if marriage date is before birth date """
     #     self.assertNotEqual(self.errorlog["US02_BirthBeforeMarriage"], 0)  # There are errors in the gedcom Test file
 
-    # Run after changing the setUpClass method to testing File -> "US01_US02_testing.ged"
-    # def test_date_before_current_date(self):
-    #     """ Test if Dates (birth, marriage, divorce, death) should not be after the current date """
-    #     self.assertNotEqual(self.errorlog["US01_DateAfterCurrent"], 0)  # There are errors in the gedcom Test file
-    #
-    # def test_marriage_before_birth_date(self):
-    #     """ Test if marriage date is before birth date """
-    #     self.assertNotEqual(self.errorlog["US02_BirthBeforeMarriage"], 0)  # There are errors in the gedcom Test file
+    # Run after changing the setUpClass method to testing File -> "US03_US04_testing.ged"
+    def test_death_before_birth(self):
+        """ Test if Death is before birth """
+        self.assertNotEqual(self.errorlog["US03_death_before_birth"], 0)  # There are errors in the gedcom Test file
+
+    def test_marriage_occurs_beforedivorce(self):
+        """ Test if Marriage occurs before divorce of spouses, and divorce can only occur after marriage """
+        self.assertNotEqual(self.errorlog["US04_MarriageOccursBeforeDivorce"], 0)
 
     # Run after changing the setUpClass method to testing File -> "US05_US06_testing.ged"
     # def test_divorce_before_death(self):
@@ -412,11 +435,6 @@ class TestGedcom(unittest.TestCase):
     #     self.assertNotEqual(self.errorlog["US10_MarriageBefore14"], 0)  # There are errors in the gedcom Test file
 
 
-    def test_death_before_birth(self):
-        """ Test if Death is before birth """
-        self.assertNotEqual(self.errorlog["US03_death_before_birth"], 0)  # There are errors in the gedcom Test file
-
-
 def main():
     file_name = input("Enter file name: ")
     g = Gedcom(file_name)
@@ -426,5 +444,5 @@ def main():
 
 
 if __name__ == '__main__':
-    # unittest.main(exit=False, verbosity=2)
-    main()
+    unittest.main(exit=False, verbosity=2)
+    # main()
