@@ -4,19 +4,6 @@ from collections import defaultdict
 from prettytable import PrettyTable
 import datetime
 from datetime import date
-import unittest
-
-
-class TestMarriage(unittest.TestCase):
-    def test_divorce(self):
-        """ to test if the divorce date is not before marriage date """
-        with self.assertRaises(KeyError):
-            Gedcom.check_divorce(Gedcom("gedcomData.ged"), "1 JAN 1930", "12 JUN 2000", "test")
-
-    def test_death_date(self):
-        """ to test if the death date is not before marriage date """
-        with self.assertRaises(KeyError):
-            Gedcom.checkMarriageBeforeDeath(Gedcom("gedcomData.ged"), "1 JAN 1930", "12 JUN 2000", "test")
 
 
 # possible values as global constant Level Wise
@@ -133,15 +120,15 @@ class Gedcom:
 
             try:
                 self.check_divorce(self.individualdata[key]["DIVDATE"],
-                                   self.individualdata[key]["MARRDATE"], key)
+                                   self.individualdata[key]["DEATDATE"], key)
             except KeyError:
-                raise KeyError("Error: divorce can't be before marriage for", key)
+                raise KeyError(f"Error: divorce can't be after death date for ID: {key}")
 
             try:
                 self.checkMarriageBeforeDeath(self.individualdata[key]["DEATDATE"],self.individualdata[key]["MARRDATE"],
                                               key)
             except KeyError:
-                raise KeyError("Error: marriage can't be after death for ", key)
+                raise KeyError(f"Error: marriage can't be after death for ID: {key}")
 
         error = self.prettyTableHelperFunction()
         if error is None:
@@ -260,11 +247,11 @@ class Gedcom:
             self.prettytablefamily.add_row(
                 [key, marriage, divorce, husband_id, husband_name, wife_id, wife_name, child])
 
-    def check_divorce(self, divorce, marriage, key):
-        """ if the divorce is before marriage, raise KeyError """
+    def check_divorce(self, divorce, death, key):
+        """ if the divorce is after death, raise KeyError """
         div_date = datetime.datetime.strptime(divorce, '%d %b %Y')
-        marr_date = datetime.datetime.strptime(marriage, '%d %b %Y')
-        result = div_date - marr_date
+        death_date = datetime.datetime.strptime(death, '%d %b %Y')
+        result = death_date - div_date
 
         if result.days < 0:
             self.errorlog[key] += 1
@@ -293,5 +280,4 @@ def main():
 
 
 if __name__ == '__main__':
-    unittest.main(exit=False, verbosity=2)
     main()
