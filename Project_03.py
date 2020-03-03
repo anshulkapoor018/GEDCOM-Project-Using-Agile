@@ -11,6 +11,7 @@ VALID_VALUES = {"0": ["INDI", "HEAD", "TRLR", "NOTE", "FAM"],
                 "1": ["NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "MARR", "HUSB", "WIFE", "CHIL", "DIV"],
                 "2": ["DATE"]}
 
+
 class Gedcom:
 
     def __init__(self, file):
@@ -27,7 +28,6 @@ class Gedcom:
 
         self.prettytableindividuals = PrettyTable()
         self.prettytablefamily = PrettyTable()
-
 
     def analyze_gedcom_file(self):
         """ Function to check if file is valid """
@@ -103,11 +103,12 @@ class Gedcom:
                 self.individualdata[key]["DIVDATE"] = "NA"
 
             today = date.today()
-            try:    # To check if birthdate is not in future
+            try:  # To check if birthdate is not in future
                 birthday = self.individualdata[key]["BIRTDATE"]
                 born_date = datetime.datetime.strptime(birthday, '%d %b %Y')
                 if born_date > datetime.datetime.now():
-                    print("ERROR: US01 INDIVIDUAL () {} has Birthdate in future".format(key, self.individualdata[key]["NAME"]))
+                    print("ERROR: US01 INDIVIDUAL () {} has Birthdate in future".format(key, self.individualdata[key][
+                        "NAME"]))
                     self.errorLog["US01_DateAfterCurrent"] += 1
             except ValueError:
                 print("Invalid birthdate Value for {}".format(self.individualdata[key]["NAME"]))
@@ -122,7 +123,9 @@ class Gedcom:
                     deathday = self.individualdata[key]["DEATDATE"]
                     death_date = datetime.datetime.strptime(deathday, '%d %b %Y')
                     if death_date > datetime.datetime.now():
-                        print("ERROR: US01 INDIVIDUAL () {} has Death Date in future".format(key, self.individualdata[key]["NAME"]))
+                        print("ERROR: US01 INDIVIDUAL () {} has Death Date in future".format(key,
+                                                                                             self.individualdata[key][
+                                                                                                 "NAME"]))
                         self.errorLog["US01_DateAfterCurrent"] += 1
                     alive_status = False
                 except ValueError:
@@ -138,15 +141,53 @@ class Gedcom:
                 age = death_date.year - born_date.year
             self.individualdata[key]["AGE"] = age
 
+            try:    # if a person is alive and older than 150 years
+                if (alive_status == True and age > 150):
+                    print("ERROR: US07 INDIVIDUAL () {} has AGE greater than 150 ".format(key, self.individualdata[key]["NAME"]))
+                    self.errorLog["US07_AgeLessOneFifty"] += 1
+            except ValueError:
+                print("Invalid Age Value for {}".format(self.individualdata[key]["NAME"]))
+                sys.exit()
+            except KeyError:
+                print("Invalid data for {}".format(self.individualdata[key]["NAME"]))
+                sys.exit()
+
+            birthday = self.individualdata[key]["BIRTDATE"]
+            try:    # check if marriage before 14
+                marriageday = self.individualdata[key]["MARRDATE"]
+            except KeyError:
+                marriageDate = "NA"
+
+            if (marriageday != "NA" and (int(marriageday.split()[2]) - int(birthday.split()[2])) < 14):
+                print("ERROR: US10 INDIVIDUAL () {} has married before the age of 14 ".format(key, self.individualdata[key]["NAME"]))
+                self.errorLog["US10_MarriageBefore14"] += 1
+
+            try:
+                if self.individualdata[key]["MARRDATE"] != "NA" and self.individualdata[key]["DEATDATE"] != "NA":
+                    self.checkMarriageBeforeDeath(self.individualdata[key]["DEATDATE"], self.individualdata[key]["MARRDATE"], key)
+            except KeyError:
+                print("ERROR: US05: marriage can't be after death for {}".format(self.individualdata[key]["NAME"]))
+
+            try:
+                if self.individualdata[key]["DIVDATE"] != "NA" and self.individualdata[key]["DEATDATE"] != "NA":
+                    self.check_divorce(self.individualdata[key]["DIVDATE"], self.individualdata[key]["DEATDATE"], key)
+            except KeyError:
+                print("ERROR: US06: divorce can't be after death date for  {}".format(self.individualdata[key]["NAME"]))
+
+
             if self.individualdata[key]["MARRDATE"] != "NA":
                 try:  # To check if marriage Date is not in future
                     marriageDate = self.individualdata[key]["MARRDATE"]
                     marr_date = datetime.datetime.strptime(marriageDate, '%d %b %Y')
                     if marr_date > datetime.datetime.now():
-                        print("ERROR: US01 INDIVIDUAL {} has marriage Date in future".format(key, self.individualdata[key]["NAME"]))
+                        print("ERROR: US01 INDIVIDUAL {} has marriage Date in future".format(key,
+                                                                                             self.individualdata[key][
+                                                                                                 "NAME"]))
                         self.errorLog["US01_DateAfterCurrent"] += 1
                     if marr_date < datetime.datetime.strptime(self.individualdata[key]["BIRTDATE"], '%d %b %Y'):
-                        print("ERROR: US02 INDIVIDUAL {} has marriage Date before Birth".format(key, self.individualdata[key]["NAME"]))
+                        print("ERROR: US02 INDIVIDUAL {} has marriage Date before Birth".format(key,
+                                                                                                self.individualdata[
+                                                                                                    key]["NAME"]))
                         self.errorLog["US02_BirthBeforeMarriage"] += 1
                 except ValueError:
                     print("Invalid marriage date Value for {}".format(self.individualdata[key]["NAME"]))
@@ -160,7 +201,9 @@ class Gedcom:
                     divorceDate = self.individualdata[key]["DIVDATE"]
                     div_date = datetime.datetime.strptime(divorceDate, '%d %b %Y')
                     if div_date > datetime.datetime.now():
-                        print("ERROR: US01 INDIVIDUAL () {} has divorce Date in future".format(key, self.individualdata[key]["NAME"]))
+                        print("ERROR: US01 INDIVIDUAL () {} has divorce Date in future".format(key,
+                                                                                               self.individualdata[key][
+                                                                                                   "NAME"]))
                         self.errorLog["US01_DateAfterCurrent"] += 1
                 except ValueError:
                     print("Invalid divorce date Value for {}".format(self.individualdata[key]["NAME"]))
@@ -170,9 +213,9 @@ class Gedcom:
                     sys.exit()
 
             if self.individualdata[key]["DEATDATE"] != "NA":
-                try:    # To check if death before birth
+                try:  # To check if death before birth
                     if self.individualdata[key]["DEATDATE"] > self.individualdata[key]["BIRTDATE"]:
-                        print("ERROR: US03 INDIVIDUAL () {} has death date before birth date".format(key, self.individualdata[key]["NAME"]))
+                        print("ERROR: US03 INDIVIDUAL () {} has death date before birth date".format(key,self.individualdata[key]["NAME"]))
                         self.errorLog["US03_death_before_birth"] += 1
                 except ValueError:
                     print("Invalid birthdate Value for {}".format(self.individualdata[key]["NAME"]))
@@ -180,7 +223,6 @@ class Gedcom:
                 except KeyError:
                     print("Invalid data for {}".format(self.individualdata[key]["NAME"]))
                     sys.exit()
-
 
         self.prettyTableHelperFunction()
         return self.errorLog
@@ -295,33 +337,74 @@ class Gedcom:
                 child = value["CHIL"]
             except KeyError:
                 child = "NA"
-            self.prettytablefamily.add_row([key, marriage, divorce, husband_id, husband_name, wife_id, wife_name, child])
+            self.prettytablefamily.add_row(
+                [key, marriage, divorce, husband_id, husband_name, wife_id, wife_name, child])
+
+    def checkMarriageBeforeDeath(self, death_date, marriage, key):
+        """ if the death is before marriage, raise KeyError """
+        death_date = datetime.datetime.strptime(death_date, '%d %b %Y')
+        marr_date = datetime.datetime.strptime(marriage, '%d %b %Y')
+        result = death_date - marr_date
+
+        if result.days < 0:
+            print("ERROR: US05: marriage can't be after death for {}".format(self.individualdata[key]["NAME"]))
+            self.errorLog["US05_checkMarriageBeforeDeath"] += 1
+
+    def check_divorce(self, divorce, death, key):
+        """ if the divorce is after death, raise KeyError """
+        div_date = datetime.datetime.strptime(divorce, '%d %b %Y')
+        death_date = datetime.datetime.strptime(death, '%d %b %Y')
+        result = death_date - div_date
+
+        if result.days < 0:
+            print("ERROR: US06: divorce can't be after death date for  {}".format(self.individualdata[key]["NAME"]))
+            self.errorLog["US06_check_divorce"] += 1
 
     def donothing(self, nothing):
         pass
 
+
 class TestGedcom(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        """
-        Set up objects with filenames
-        """
-        cls.x = Gedcom("us03.ged")
+        """ Set up objects with filenames """
+        cls.x = Gedcom("US03_US04_testing.ged")
         cls.errorlog = cls.x.analyze_gedcom_file()
 
-
+    # Run after changing the setUpClass method to testing File -> "US01_US02_testing.ged"
     # def test_date_before_current_date(self):
     #     """ Test if Dates (birth, marriage, divorce, death) should not be after the current date """
     #     self.assertNotEqual(self.errorlog["US01_DateAfterCurrent"], 0)  # There are errors in the gedcom Test file
-
+    #
     # def test_marriage_before_birth_date(self):
     #     """ Test if marriage date is before birth date """
     #     self.assertNotEqual(self.errorlog["US02_BirthBeforeMarriage"], 0)  # There are errors in the gedcom Test file
 
+    # Run after changing the setUpClass method to testing File -> "US05_US06_testing.ged"
+    # def test_divorce_before_death(self):
+    #     """ to test if the divorce date is not before marriage date """
+    #     # with self.assertRaises(KeyError):
+    #     #     Gedcom.check_divorce(Gedcom("gedcomData.ged"), "1 JAN 2000", "12 JUN 1999", "test")
+    #     self.assertNotEqual(self.errorlog["US06_check_divorce"], 0)
+    #
+    # def test_marriage_before_death_date(self):
+    #     """ to test if the death date is not before marriage date """
+    #     # with self.assertRaises(KeyError):
+    #     #     Gedcom.checkMarriageBeforeDeath(Gedcom("gedcomData.ged"), "1 JAN 1930", "12 JUN 2000", "test")
+    #     self.assertNotEqual(self.errorlog["US05_checkMarriageBeforeDeath"], 0)
+
+    # Run after changing the setUpClass method to testing File -> "US07_US08_testing.ged"
+    # def test_age_150(self):
+    #     """ Test if Dates (birth, marriage, divorce, death) should not be after the current date """
+    #     self.assertNotEqual(self.errorlog["US07_AgeLessOneFifty"], 0)  # There are errors in the gedcom Test file
+    #
+    # def test_married_before_14(self):
+    #     """ Test if Dates (birth, marriage, divorce, death) should not be after the current date """
+    #     self.assertNotEqual(self.errorlog["US10_MarriageBefore14"], 0)  # There are errors in the gedcom Test file
+
     def test_death_before_birth(self):
-        """ Test if Dates (birth, marriage, divorce, death) should not be after the current date """
+        """ Test if Death is before birth """
         self.assertNotEqual(self.errorlog["US03_death_before_birth"], 0)  # There are errors in the gedcom Test file
-    
 
 
 def main():
