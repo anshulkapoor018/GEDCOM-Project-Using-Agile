@@ -2,7 +2,7 @@ import pathlib
 import unittest
 import sys
 from collections import defaultdict
-from prettytable import PrettyTable
+# from prettytable import PrettyTable
 import datetime
 from datetime import date
 
@@ -169,11 +169,20 @@ class Gedcom:
                     print("Invalid data for {}".format(self.individualdata[key]["NAME"]))
                     sys.exit()
 
+            if self.individualdata[key]["DEATDATE"] != "NA":
+                try:    # To check if death before birth
+                    if self.individualdata[key]["DEATH"] > self.individualdata[key]["BIRTDATE"]:
+                        print("ERROR: US03 INDIVIDUAL () {} has death date before birth date".format(key, self.individualdata[key]["NAME"]))
+                        self.errorLog["US03_death_before_birth"] += 1
+                except ValueError:
+                    print("Invalid birthdate Value for {}".format(self.individualdata[key]["NAME"]))
+                    sys.exit()
+                except KeyError:
+                    print("Invalid data for {}".format(self.individualdata[key]["NAME"]))
+                    sys.exit()
 
-        # error = self.prettyTableHelperFunction()
+
         self.prettyTableHelperFunction()
-        # if error is None:
-        #     error = "No errors found"
         return self.errorLog
 
     def parse_gedcom_file(self, line, split_words, len_split_words, offset):
@@ -297,18 +306,22 @@ class TestGedcom(unittest.TestCase):
         """
         Set up objects with filenames
         """
-        cls.x = Gedcom("US01_US02_testing.ged",)
+        cls.x = Gedcom("us03.ged")
         cls.errorlog = cls.x.analyze_gedcom_file()
 
 
-    def test_date_before_current_date(self):
+    # def test_date_before_current_date(self):
+    #     """ Test if Dates (birth, marriage, divorce, death) should not be after the current date """
+    #     self.assertNotEqual(self.errorlog["US01_DateAfterCurrent"], 0)  # There are errors in the gedcom Test file
+
+    # def test_marriage_before_birth_date(self):
+    #     """ Test if marriage date is before birth date """
+    #     self.assertNotEqual(self.errorlog["US02_BirthBeforeMarriage"], 0)  # There are errors in the gedcom Test file
+
+    def test_death_before_birth(self):
         """ Test if Dates (birth, marriage, divorce, death) should not be after the current date """
-        self.assertNotEqual(self.errorlog["US01_DateAfterCurrent"], 0)  # There are errors in the gedcom Test file
-
-    def test_marriage_before_birth_date(self):
-        """ Test if marriage date is before birth date """
-        self.assertNotEqual(self.errorlog["US02_BirthBeforeMarriage"], 0)  # There are errors in the gedcom Test file
-
+        self.assertNotEqual(self.errorlog["US03_death_before_birth"], 0)  # There are errors in the gedcom Test file
+    
 
 
 def main():
