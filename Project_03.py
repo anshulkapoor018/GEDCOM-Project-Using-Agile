@@ -337,7 +337,7 @@ class TestGedcom(unittest.TestCase):
 
     def test_married_before_14(self):
         """ Test if Dates (birth, marriage, divorce, death) should not be after the current date """
-        self.assertNotEqual(self.errorlog["MarriageBefore14"], 0)  # There are errors in the gedcom Test file
+        self.assertNotEqual(self.errorlog["US10_MarriageBefore14"], 0)  # There are errors in the gedcom Test file
 
 
 def main():
