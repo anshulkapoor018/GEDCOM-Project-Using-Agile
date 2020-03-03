@@ -391,28 +391,28 @@ class TestGedcom(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """ Set up objects with filenames """
-        cls.x = Gedcom("US03_US04_testing.ged")
+        cls.x = Gedcom("US01_US02_testing.ged")
         cls.errorlog = cls.x.analyze_gedcom_file()
 
     # Run after changing the setUpClass method to testing File -> "US01_US02_testing.ged"
-    # def test_date_before_current_date(self):
-    #     """ Test if Dates (birth, marriage, divorce, death) should not be after the current date """
-    #     self.assertNotEqual(self.errorlog["US01_DateAfterCurrent"], 0)  # There are errors in the gedcom Test file
-    #
-    # def test_marriage_before_birth_date(self):
-    #     """ Test if marriage date is before birth date """
-    #     self.assertNotEqual(self.errorlog["US02_BirthBeforeMarriage"], 0)  # There are errors in the gedcom Test file
+    def test_date_before_current_date(self):
+        """ Test if Dates (birth, marriage, divorce, death) should not be after the current date """
+        self.assertNotEqual(self.errorlog["US01_DateAfterCurrent"], 0)  # There are errors in the gedcom Test file
+
+    def test_marriage_before_birth_date(self):
+        """ Test if marriage date is before birth date """
+        self.assertNotEqual(self.errorlog["US02_BirthBeforeMarriage"], 0)  # There are errors in the gedcom Test file
 
     # Run after changing the setUpClass method to testing File -> "US03_US04_testing.ged"
-    def test_death_before_birth(self):
-        """ Test if Death is before birth """
-        self.assertNotEqual(self.errorlog["US03_death_before_birth"], 0)  # There are errors in the gedcom Test file
-
-    def test_marriage_occurs_beforedivorce(self):
-        """ Test if Marriage occurs before divorce of spouses, and divorce can only occur after marriage """
-        self.assertNotEqual(self.errorlog["US04_MarriageOccursBeforeDivorce"], 0)
-
-    # Run after changing the setUpClass method to testing File -> "US05_US06_testing.ged"
+    # def test_death_before_birth(self):
+    #     """ Test if Death is before birth """
+    #     self.assertNotEqual(self.errorlog["US03_death_before_birth"], 0)  # There are errors in the gedcom Test file
+    #
+    # def test_marriage_occurs_beforedivorce(self):
+    #     """ Test if Marriage occurs before divorce of spouses, and divorce can only occur after marriage """
+    #     self.assertNotEqual(self.errorlog["US04_MarriageOccursBeforeDivorce"], 0)
+    #
+    # # Run after changing the setUpClass method to testing File -> "US05_US06_testing.ged"
     # def test_divorce_before_death(self):
     #     """ to test if the divorce date is not before marriage date """
     #     # with self.assertRaises(KeyError):
@@ -424,8 +424,8 @@ class TestGedcom(unittest.TestCase):
     #     # with self.assertRaises(KeyError):
     #     #     Gedcom.checkMarriageBeforeDeath(Gedcom("gedcomData.ged"), "1 JAN 1930", "12 JUN 2000", "test")
     #     self.assertNotEqual(self.errorlog["US05_checkMarriageBeforeDeath"], 0)
-
-    # Run after changing the setUpClass method to testing File -> "US07_US08_testing.ged"
+    #
+    # # Run after changing the setUpClass method to testing File -> "US07_US08_testing.ged"
     # def test_age_150(self):
     #     """ Test if Dates (birth, marriage, divorce, death) should not be after the current date """
     #     self.assertNotEqual(self.errorlog["US07_AgeLessOneFifty"], 0)  # There are errors in the gedcom Test file
@@ -444,5 +444,5 @@ def main():
 
 
 if __name__ == '__main__':
-    unittest.main(exit=False, verbosity=2)
-    # main()
+    # unittest.main(exit=False, verbosity=2)
+    main()
