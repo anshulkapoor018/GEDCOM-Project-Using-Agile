@@ -149,6 +149,17 @@ class Gedcom:
                 print("Invalid data for {}".format(self.individualdata[key]["NAME"]))
                 sys.exit()
 
+            birthday = self.individualdata[key]["BIRTDATE"]
+            try:    # check if marriage before 14
+                marriageday = self.individualdata[key]["MARRDATE"]
+            except KeyError:
+                marriageDate = "NA"
+
+            if (marriageday != "NA" and (int(marriageday.split()[2]) - int(birthday.split()[2])) < 14):
+                print("ERROR: US10 INDIVIDUAL () {} has married before the age of 14 ".format(key, self.individualdata[key]["NAME"]))
+                self.errorLog["MarriageBefore14"] += 1
+
+
             if self.individualdata[key]["MARRDATE"] != "NA":
                 try:  # To check if marriage Date is not in future
                     marriageDate = self.individualdata[key]["MARRDATE"]
@@ -324,6 +335,10 @@ class TestGedcom(unittest.TestCase):
         """ Test if Dates (birth, marriage, divorce, death) should not be after the current date """
         self.assertNotEqual(self.errorlog["US07_AgeLessOneFifty"], 0)  # There are errors in the gedcom Test file
 
+    def test_married_before_14(self):
+        """ Test if Dates (birth, marriage, divorce, death) should not be after the current date """
+        self.assertNotEqual(self.errorlog["MarriageBefore14"], 0)  # There are errors in the gedcom Test file
+
 
 def main():
     file_name = input("Enter file name: ")
@@ -335,4 +350,4 @@ def main():
 
 if __name__ == '__main__':
     unittest.main(exit=False, verbosity=2)
-    # main()
+    main()
