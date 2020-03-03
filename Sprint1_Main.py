@@ -142,7 +142,7 @@ class Gedcom:
             self.individualdata[key]["AGE"] = age
 
             try:    # if a person is alive and older than 150 years
-                if (alive_status == True and age > 150):
+                if alive_status is True and age > 150:
                     print("ERROR: US07 INDIVIDUAL () {} has AGE greater than 150 ".format(key, self.individualdata[key]["NAME"]))
                     self.errorLog["US07_AgeLessOneFifty"] += 1
             except ValueError:
@@ -158,7 +158,7 @@ class Gedcom:
             except KeyError:
                 marriageDate = "NA"
 
-            if (marriageday != "NA" and (int(marriageday.split()[2]) - int(birthday.split()[2])) < 14):
+            if marriageday != "NA" and (int(marriageday.split()[2]) - int(birthday.split()[2])) < 14:
                 print("ERROR: US10 INDIVIDUAL () {} has married before the age of 14 ".format(key, self.individualdata[key]["NAME"]))
                 self.errorLog["US10_MarriageBefore14"] += 1
 
@@ -196,6 +196,23 @@ class Gedcom:
                     print("Invalid data for {}".format(self.individualdata[key]["NAME"]))
                     sys.exit()
 
+            if self.individualdata[key]["DEATDATE"] != "NA":
+                try:
+                    death_date = self.individualdata[key]["DEATDATE"]
+                    deathday = self.individualdata[key]["DEATDATE"]
+                    death_date = datetime.datetime.strptime(deathday, '%d %b %Y')
+                    birthday = self.individualdata[key]["BIRTDATE"]
+                    born_date = datetime.datetime.strptime(birthday, '%d %b %Y')
+                    if death_date < born_date:
+                        print("ERROR: US03 INDIVIDUAL () {} has Death date Date before Birth date".format(key,
+                                                                                                          self.individualdata[
+                                                                                                              key][
+                                                                                                              "NAME"]))
+                        self.errorLog["US03_death_before_birth"] += 1
+                    alive_status = False
+                except KeyError:
+                    alive_status = True
+
             if self.individualdata[key]["DIVDATE"] != "NA":
                 try:  # To check if divorce Date is not in future
                     divorceDate = self.individualdata[key]["DIVDATE"]
@@ -207,18 +224,6 @@ class Gedcom:
                         self.errorLog["US01_DateAfterCurrent"] += 1
                 except ValueError:
                     print("Invalid divorce date Value for {}".format(self.individualdata[key]["NAME"]))
-                    sys.exit()
-                except KeyError:
-                    print("Invalid data for {}".format(self.individualdata[key]["NAME"]))
-                    sys.exit()
-
-            if self.individualdata[key]["DEATDATE"] != "NA":
-                try:  # To check if death before birth
-                    if self.individualdata[key]["DEATDATE"] > self.individualdata[key]["BIRTDATE"]:
-                        print("ERROR: US03 INDIVIDUAL () {} has death date before birth date".format(key,self.individualdata[key]["NAME"]))
-                        self.errorLog["US03_death_before_birth"] += 1
-                except ValueError:
-                    print("Invalid birthdate Value for {}".format(self.individualdata[key]["NAME"]))
                     sys.exit()
                 except KeyError:
                     print("Invalid data for {}".format(self.individualdata[key]["NAME"]))
