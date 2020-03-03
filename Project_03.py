@@ -138,6 +138,8 @@ class Gedcom:
                 age = death_date.year - born_date.year
             self.individualdata[key]["AGE"] = age
 
+
+
             if self.individualdata[key]["MARRDATE"] != "NA":
                 try:  # To check if marriage Date is not in future
                     marriageDate = self.individualdata[key]["MARRDATE"]
@@ -294,7 +296,7 @@ class TestGedcom(unittest.TestCase):
         """
         Set up objects with filenames
         """
-        cls.x = Gedcom("US01_US02_testing.ged",)
+        cls.x = Gedcom("US01_US02_testing.ged")
         cls.errorlog = cls.x.analyze_gedcom_file()
 
 
