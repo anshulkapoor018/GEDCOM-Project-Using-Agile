@@ -140,9 +140,10 @@ class Gedcom:
                 age = death_date.year - born_date.year
             self.individualdata[key]["AGE"] = age
 
-            try:    # if a person is alive and older than 150 years
+            try:  # if a person is alive and older than 150 years
                 if alive_status is True and age > 150:
-                    print("ERROR: US07 INDIVIDUAL () {} has AGE greater than 150 ".format(key, self.individualdata[key]["NAME"]))
+                    print("ERROR: US07 INDIVIDUAL () {} has AGE greater than 150 ".format(key, self.individualdata[key][
+                        "NAME"]))
                     self.errorLog["US07_AgeLessOneFifty"] += 1
             except ValueError:
                 print("Invalid Age Value for {}".format(self.individualdata[key]["NAME"]))
@@ -152,18 +153,21 @@ class Gedcom:
                 sys.exit()
 
             birthday = self.individualdata[key]["BIRTDATE"]
-            try:    # check if marriage before 14
+            try:  # check if marriage before 14
                 marriageday = self.individualdata[key]["MARRDATE"]
             except KeyError:
                 marriageDate = "NA"
 
             if marriageday != "NA" and (int(marriageday.split()[2]) - int(birthday.split()[2])) < 14:
-                print("ERROR: US10 INDIVIDUAL () {} has married before the age of 14 ".format(key, self.individualdata[key]["NAME"]))
+                print("ERROR: US10 INDIVIDUAL () {} has married before the age of 14 ".format(key,
+                                                                                              self.individualdata[key][
+                                                                                                  "NAME"]))
                 self.errorLog["US10_MarriageBefore14"] += 1
 
             try:
                 if self.individualdata[key]["MARRDATE"] != "NA" and self.individualdata[key]["DEATDATE"] != "NA":
-                    self.checkMarriageBeforeDeath(self.individualdata[key]["DEATDATE"], self.individualdata[key]["MARRDATE"], key)
+                    self.checkMarriageBeforeDeath(self.individualdata[key]["DEATDATE"],
+                                                  self.individualdata[key]["MARRDATE"], key)
             except KeyError:
                 print("ERROR: US05: marriage can't be after death for {}".format(self.individualdata[key]["NAME"]))
 
@@ -173,6 +177,14 @@ class Gedcom:
             except KeyError:
                 print("ERROR: US06: divorce can't be after death date for  {}".format(self.individualdata[key]["NAME"]))
 
+            """try:
+                if self.individualdata[key]["FAMC"] != "NA"
+                    siblings_list = defaultdict()
+                    siblings_list[self.individualdata[key]["FAMC"]][self.individualdata[key]["NAME"],
+                                                                    self.individualdata[key]["BIRT"]]
+                    self.check_Siblings_spacing(siblings_list)
+            except KeyError:
+                print("ERROR: US13: {}".format(self.individualdata[key]["NAME"]))"""
 
             if self.individualdata[key]["MARRDATE"] != "NA":
                 try:  # To check if marriage Date is not in future
@@ -356,16 +368,24 @@ class Gedcom:
 
             try:
                 child = value["CHIL"]
+                self.check_US13_US14(child, key)
             except KeyError:
                 child = "NA"
+            except ValueError as e:
+                print(e)
 
             if (divorce != "NA") and (div_husband != "NA") and (div_wife != "NA"):
-                if (datetime.datetime.strptime(marriage, '%d %b %Y') > datetime.datetime.strptime(self.individualdata[husband_individiual_id]["DIVDATE"], '%d %b %Y')) \
-                        or (datetime.datetime.strptime(self.individualdata[wife_individiual_id]["MARRDATE"], '%d %b %Y') > datetime.datetime.strptime(self.individualdata[wife_individiual_id]["DIVDATE"], '%d %b %Y')):
-                    print("ERROR: US04 INDIVIDUAL {} {} has Marriage After Divorce".format(husband_individiual_id, husband_name))
+                if (datetime.datetime.strptime(marriage, '%d %b %Y') > datetime.datetime.strptime(
+                        self.individualdata[husband_individiual_id]["DIVDATE"], '%d %b %Y')) \
+                        or (datetime.datetime.strptime(self.individualdata[wife_individiual_id]["MARRDATE"],
+                                                       '%d %b %Y') > datetime.datetime.strptime(
+                    self.individualdata[wife_individiual_id]["DIVDATE"], '%d %b %Y')):
+                    print("ERROR: US04 INDIVIDUAL {} {} has Marriage After Divorce".format(husband_individiual_id,
+                                                                                           husband_name))
                     self.errorLog["US04_MarriageOccursBeforeDivorce"] += 1
 
-            self.prettytablefamily.add_row([key, marriage, divorce, husband_individiual_id, husband_name, wife_individiual_id, wife_name, child])
+            self.prettytablefamily.add_row(
+                [key, marriage, divorce, husband_individiual_id, husband_name, wife_individiual_id, wife_name, child])
 
     def checkMarriageBeforeDeath(self, death_date, marriage, key):
         """ if the death is before marriage, raise KeyError """
@@ -386,6 +406,44 @@ class Gedcom:
         if result.days < 0:
             print("ERROR: US06: divorce can't be after death date for  {}".format(self.individualdata[key]["NAME"]))
             self.errorLog["US06_check_divorce"] += 1
+
+    def check_US13_US14(self, sibling_list, key):
+        """ this function check for:
+            - US13 ( Birth dates of siblings should be more than 8 months apart or less than2 days apart, like twins )
+            - US14 ( No more than five siblings should be born at the same time )
+        """
+        children = dict()
+        for indiv_id in sibling_list:
+            children[indiv_id] = datetime.datetime.strptime(self.individualdata[indiv_id]["BIRTDATE"], '%d %b %Y')
+
+        twins = defaultdict(int)
+        US13_siblings = defaultdict(int)
+
+        # to compare between two siblings
+        for ID_1, first in children.items():
+            for ID_2, second in children.items():
+
+                if ID_1 == ID_2:
+                    continue
+
+                difference = first - second
+                if 1 >= difference.days >= -1:
+                    twins[ID_2] += 1
+
+                elif 240 >= difference.days >= -240:
+                    self.errorLog["US13 Siblings spacing:"] += 0.5
+                    US13_siblings[ID_2] += 1
+
+        if len(US13_siblings.keys()) > 0:
+            print("ERROR: US13 Siblings spacing: "
+                  "Birth dates of siblings with ID {}, should be more than 8 months apart or less than2 days apart, "
+                  "like twins".format(list(US13_siblings.keys())))
+
+        if len(twins) > 5:
+            self.errorLog["US14 Multiple births <= 5:"] += 1
+            raise ValueError("ERROR: US14 Multiple births <= 5: "
+                             "No more than five siblings should be born at the same time in family with ID: {}."
+                             .format(key))
 
     def donothing(self, nothing):
         pass
