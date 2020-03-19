@@ -23,7 +23,7 @@
 1 MARR
 2 DATE 26 NOV 1986
 0 I4 INDI
-1 NAME Pratap Narayan /Kapoor/
+1 NAME Pratap /Kapoor/
 1 SEX M
 1 BIRT
 2 DATE 10 MAY 1932
@@ -112,7 +112,7 @@
 2 DATE 17 NOV 1992
 1 FAMC F5
 0 I16 INDI
-1 NAME Laxmi Narayan /Kapoor/
+1 NAME Laxmi /Kapoor/
 1 SEX M
 1 BIRT
 2 DATE 1 JAN 1907
@@ -132,7 +132,7 @@
 1 MARR
 2 DATE 1 JAN 1930
 0 I18 INDI
-1 NAME Gopal Narayan /Kapoor/
+1 NAME Gopal /Kapoor/
 1 SEX M
 1 BIRT
 2 DATE 6 JAN 1940
