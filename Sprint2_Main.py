@@ -339,6 +339,15 @@ class Gedcom:
             husband_individiual_id = value["HUSB"]
             wife_individiual_id = value["WIFE"]
             children = value["CHIL"]
+
+            if abs(datetime.datetime.strptime(self.individualdata[husband_individiual_id]["BIRTDATE"], '%d %b %Y') - datetime.datetime.strptime(self.individualdata[wife_individiual_id]["BIRTDATE"], '%d %b %Y')).days > 5475:
+                print("ERROR: US17 FAMILY {} has marriage between descendants and their children".format(key))
+                self.errorLog["DescendantChildrenMarriage"] += 1
+
+            if len(children) > 15:
+                print("ERROR: US15 FAMILY {} more than 15 siblings".format(key))
+                self.errorLog["SiblingGreaterThan15"] += 1
+
             for i in children:
                 age_list.append(self.individualdata[i]["AGE"])
                 test_order.append(self.individualdata[i]["AGE"])
