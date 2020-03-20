@@ -83,7 +83,16 @@ class Gedcom:
     def add_dates(self, split_words_list):
         """ Helper function to add Dates to Family Data and Individual Data """
         if self.curr_id in self.individualdata:
+            if self.tempdata + split_words_list[1] == "MARRDATE":
+                if self.individualdata[self.curr_id].__contains__("MARRDATE"):
+                    try:
+                        self.individualdata[self.curr_id]["DIVDATE"]
+                    except KeyError:
+                        print("ERROR: US11 INDIVIDUAL {} HAS DONE BIGAMY".format(self.curr_id))
+                        self.errorLog["Bigamy"] += 1 
+
             self.individualdata[self.curr_id][self.tempdata + split_words_list[1]] = split_words_list[2]
+    
         elif split_words_list[1] == "DATE":
             husband = self.familydata[self.curr_id]["HUSB"]
             wife = self.familydata[self.curr_id]["WIFE"]
@@ -377,6 +386,10 @@ class Gedcom:
                 child_name = self.individualdata[child]["NAME"]
                 child_firstname, child_lastname = child_name.split()
 
+                if abs(datetime.datetime.strptime(self.individualdata[husband_individiual_id]["BIRTDATE"], '%d %b %Y') - datetime.datetime.strptime(self.individualdata[child]["BIRTDATE"], '%d %b %Y')).days > 29200:
+                    print("ERROR: US12 FAMILY {} Parents are too old".format(key))
+                self.errorLog["ParentsTooOld"] += 1
+
                 if self.individualdata[husband_individiual_id]["MARRDATE"] != "NA":
                     c_Father_MarriageDate = datetime.datetime.strptime(
                         self.individualdata[husband_individiual_id]["MARRDATE"], '%d %b %Y')
@@ -528,7 +541,7 @@ class Gedcom:
 
 def main():
     # file_name = input("Enter file name: ")
-    g = Gedcom("gedcomData.ged")
+    g = Gedcom("US11_US12_testing.ged")
     print(g.analyze_gedcom_file())
     print(g.prettytableindividuals)
     print(g.prettytablefamily)
