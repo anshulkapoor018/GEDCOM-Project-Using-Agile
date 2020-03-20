@@ -528,7 +528,7 @@ class Gedcom:
 
 def main():
     # file_name = input("Enter file name: ")
-    g = Gedcom("gedcomData.ged")
+    g = Gedcom("US15_US17_testing.ged")
     print(g.analyze_gedcom_file())
     print(g.prettytableindividuals)
     print(g.prettytablefamily)
