@@ -11,9 +11,11 @@ class TestGedcom(unittest.TestCase):
 
 
     def test_descendantmarryparent(self):
+        """ To Test if Parents should not marry any of their descendants """
         self.assertNotEqual(self.errorlog["DescendantChildrenMarriage"], 0)
 
     def test_siblingsgreaterthan15(self):
+        """ To Test if There should be fewer than 15 siblings in a family """
         self.assertNotEqual(self.errorlog["SiblingGreaterThan15"], 0)
 
 

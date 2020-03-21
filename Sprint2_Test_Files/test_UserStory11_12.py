@@ -11,9 +11,11 @@ class TestGedcom(unittest.TestCase):
 
 
     def test_bigamy(self):
+        """ Test if there is Bigamy """
         self.assertNotEqual(self.errorlog["Bigamy"], 0)
 
     def test_parentstooold(self):
+        """ Test if parents too old """
         self.assertNotEqual(self.errorlog["ParentsTooOld"], 0)
 
 

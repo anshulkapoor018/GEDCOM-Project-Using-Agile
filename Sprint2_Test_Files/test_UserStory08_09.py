@@ -11,11 +11,11 @@ class TestGedcom(unittest.TestCase):
 
     # Run after changing the setUpClass method to testing File -> "US01_US02_testing.ged"
     def test_birthBeforeMarriageOfParents(self):
-        """ """
+        """ Test if Birth is Before Marriage of Parents """
         self.assertNotEqual(self.errorlog["US08_BirthBeforeMarriageOfParents"], 0)  # There are errors in the gedcom Test file
 
     def test_birthBeforeDeathOfParents(self):
-        """  """
+        """ Test if birth is before death of mother """
         self.assertNotEqual(self.errorlog["US09_BirthBeforeDeathOfParents"], 0)  # There are errors in the gedcom Test file
 
 
