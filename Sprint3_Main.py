@@ -63,6 +63,11 @@ class Gedcom:
 
     def add_individual_data(self, split_words):
         """ Helper function to add Husband and Wife Data to Individual Data """
+
+        if self.individualdata.__contains__(split_words[1]):
+            print("ERROR: US22 INDIVIDUAL {} has a repetitive ID".format(split_words[1]))
+            self.errorLog["RepetitiveID"] += 1
+
         self.individualdata[split_words[1]] = {}
         self.curr_id = split_words[1]
 
@@ -473,6 +478,11 @@ class Gedcom:
                     print("ERROR: US04 INDIVIDUAL {} {} has Marriage After Divorce".format(husband_individiual_id,
                                                                                            husband_name))
                     self.errorLog["US04_MarriageOccursBeforeDivorce"] += 1
+
+            if (self.individualdata[husband_individiual_id]["SEX"] == "M" and self.individualdata[wife_individiual_id]["SEX"] == "M"):
+                print("ERROR: US21 INDIVIDUAL {} {} and INDIVIDUAL {} {} are of same gender but have married".format(husband_individiual_id, husband_name, wife_individiual_id, wife_name))
+                self.errorLog["ProperGender"] += 1
+
 
             self.prettytablefamily.add_row(
                 [key, marriage, divorce, husband_individiual_id, husband_name, wife_individiual_id, wife_name, child])
