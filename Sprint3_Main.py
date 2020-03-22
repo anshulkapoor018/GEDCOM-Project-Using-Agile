@@ -13,7 +13,7 @@ VALID_VALUES = {"0": ["INDI", "HEAD", "TRLR", "NOTE", "FAM"],
 
 class Gedcom:
 
-    def __init__(self, file):
+    def __init__(self, file, pretty):
         self.file = file
         self.directory = pathlib.Path(__file__).parent
 
@@ -21,12 +21,19 @@ class Gedcom:
         self.tempdata = ""
         self.curr_id = ""
 
+        self.samenameandbirthdate = []
         self.individualdata = defaultdict(dict)
         self.familydata = defaultdict(dict)
         self.errorLog = defaultdict(int)
 
         self.prettytableindividuals = PrettyTable()
         self.prettytablefamily = PrettyTable()
+        if pretty.lower() == "y":
+            self.bool_to_print = True
+        elif pretty.lower() == "n":
+            self.bool_to_print = False
+        else:
+            print("Invalid input for pretty table argument")
 
     def analyze_gedcom_file(self):
         """ Function to check if file is valid """
@@ -293,6 +300,12 @@ class Gedcom:
 
         self.prettytableindividuals.field_names = ["ID", "NAME", "GENDER", "BIRTH DATE",
                                                    "AGE", "ALIVE", "DEATH", "CHILD", "SPOUSE"]
+        single_list = []
+        married_list = []
+        test_single = []
+        test_married = []
+        deceased_list = []
+        test_deceased = []
 
         for key in sorted(self.individualdata.keys()):
             value = self.individualdata[key]
@@ -301,6 +314,21 @@ class Gedcom:
             birthdate = value["BIRTDATE"]
             age = value["AGE"]
             alive = value["ALIVE"]
+
+            if name + birthdate in self.samenameandbirthdate:
+                print("ERROR: US23 INDIVIDUAL {} {} does not have a unique name and birth date".format(key, name))
+                self.errorLog["UniqueNameBirthDate"] += 1
+            else:
+                self.samenameandbirthdate.append(name + birthdate)
+
+            # try:
+            #     value["MARRDATE"]
+            #     married_list.append(value["NAME"])
+            #     test_married.append(value["NAME"])
+
+            # except KeyError:
+            #     single_list.append(value["NAME"])
+            #     test_single.append(value["NAME"])
 
             try:
                 death = value["DEATDATE"]
@@ -338,6 +366,13 @@ class Gedcom:
 
             self.prettytableindividuals.add_row([key, name, gender, birthdate, age, alive, death, child, spouse])
 
+        # if self.bool_to_print:
+        #     # print(self.prettytableindividuals)
+
+        #     print("DISPLAY US31 LIST OF SINGLES: {}".format(single_list))
+        
+        
+        
         self.prettytablefamily.field_names = ["ID", "MARRIAGE DATE", "DIVORCE DATE", "HUSBAND ID",
                                               "HUSBAND NAME", "WIFE ID", "WIFE NAME", "CHILDREN"]
 
@@ -550,8 +585,9 @@ class Gedcom:
 
 
 def main():
-    file_name = input("Enter file name: ")
-    g = Gedcom(file_name)
+    file_name = input("Enter file name: \n")
+    pretty = input("Do you want pretty table? y/n \n")
+    g = Gedcom(file_name, pretty)
     print(g.analyze_gedcom_file())
     print(g.prettytableindividuals)
     print(g.prettytablefamily)
