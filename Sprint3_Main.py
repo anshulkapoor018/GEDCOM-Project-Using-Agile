@@ -586,6 +586,7 @@ class Gedcom:
         pass
 
 
+
 def main():
     file_name = input("Enter file name: \n")
     pretty = input("Do you want pretty table? y/n \n")
