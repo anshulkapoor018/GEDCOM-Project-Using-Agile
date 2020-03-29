@@ -101,10 +101,10 @@ class Gedcom:
                         self.individualdata[self.curr_id]["DIVDATE"]
                     except KeyError:
                         print("ERROR: US11 INDIVIDUAL {} HAS DONE BIGAMY".format(self.curr_id))
-                        self.errorLog["Bigamy"] += 1 
+                        self.errorLog["Bigamy"] += 1
 
             self.individualdata[self.curr_id][self.tempdata + split_words_list[1]] = split_words_list[2]
-    
+
         elif split_words_list[1] == "DATE":
             husband = self.familydata[self.curr_id]["HUSB"]
             wife = self.familydata[self.curr_id]["WIFE"]
@@ -206,7 +206,6 @@ class Gedcom:
                     self.check_Siblings_spacing(siblings_list)
             except KeyError:
                 print("ERROR: US13: {}".format(self.individualdata[key]["NAME"]))"""
-
 
             if self.individualdata[key]["MARRDATE"] != "NA":
                 try:  # To check if marriage Date is not in future
@@ -370,9 +369,7 @@ class Gedcom:
         #     # print(self.prettytableindividuals)
 
         #     print("DISPLAY US31 LIST OF SINGLES: {}".format(single_list))
-        
-        
-        
+
         self.prettytablefamily.field_names = ["ID", "MARRIAGE DATE", "DIVORCE DATE", "HUSBAND ID",
                                               "HUSBAND NAME", "WIFE ID", "WIFE NAME", "CHILDREN"]
 
@@ -389,7 +386,9 @@ class Gedcom:
             wife_individiual_id = value["WIFE"]
             children = value["CHIL"]
 
-            if abs(datetime.datetime.strptime(self.individualdata[husband_individiual_id]["BIRTDATE"], '%d %b %Y') - datetime.datetime.strptime(self.individualdata[wife_individiual_id]["BIRTDATE"], '%d %b %Y')).days > 5475:
+            if abs(datetime.datetime.strptime(self.individualdata[husband_individiual_id]["BIRTDATE"],
+                                              '%d %b %Y') - datetime.datetime.strptime(
+                    self.individualdata[wife_individiual_id]["BIRTDATE"], '%d %b %Y')).days > 5475:
                 print("ERROR: US17 FAMILY {} has marriage between descendants and their children".format(key))
                 self.errorLog["DescendantChildrenMarriage"] += 1
 
@@ -426,7 +425,9 @@ class Gedcom:
                 child_name = self.individualdata[child]["NAME"]
                 child_firstname, child_lastname = child_name.split()
 
-                if abs(datetime.datetime.strptime(self.individualdata[husband_individiual_id]["BIRTDATE"], '%d %b %Y') - datetime.datetime.strptime(self.individualdata[child]["BIRTDATE"], '%d %b %Y')).days > 29200:
+                if abs(datetime.datetime.strptime(self.individualdata[husband_individiual_id]["BIRTDATE"],
+                                                  '%d %b %Y') - datetime.datetime.strptime(
+                        self.individualdata[child]["BIRTDATE"], '%d %b %Y')).days > 29200:
                     print("ERROR: US12 FAMILY {} Parents are too old".format(key))
                 self.errorLog["ParentsTooOld"] += 1
 
@@ -463,8 +464,8 @@ class Gedcom:
                         if (c_birthday - c_Father_DeathDate).days > 270:
                             print(
                                 "ERROR: US09 Family {} has Child {} with Birth date '{}' who was born after 9 months after Fathers Death '{}'"
-                                .format(key, child_firstname, self.individualdata[child]["BIRTDATE"],
-                                        self.individualdata[husband_individiual_id]["DEATDATE"]))
+                                    .format(key, child_firstname, self.individualdata[child]["BIRTDATE"],
+                                            self.individualdata[husband_individiual_id]["DEATDATE"]))
                             self.errorLog["US09_BirthBeforeDeathOfParents"] += 1
                     except KeyError:
                         pass
@@ -476,8 +477,8 @@ class Gedcom:
                         if (c_birthday - c_Mother_DeathDate).days > 0:
                             print(
                                 "ERROR: US09 Family {} has Child {} with Birth date '{}' who was born after mothers death '{}'"
-                                .format(key, child_firstname, self.individualdata[child]["BIRTDATE"],
-                                        self.individualdata[wife_individiual_id]["DEATDATE"]))
+                                    .format(key, child_firstname, self.individualdata[child]["BIRTDATE"],
+                                            self.individualdata[wife_individiual_id]["DEATDATE"]))
                             self.errorLog["US09_BirthBeforeDeathOfParents"] += 1
                     except KeyError:
                         pass
@@ -514,10 +515,11 @@ class Gedcom:
                                                                                            husband_name))
                     self.errorLog["US04_MarriageOccursBeforeDivorce"] += 1
 
-            if (self.individualdata[husband_individiual_id]["SEX"] == "M" and self.individualdata[wife_individiual_id]["SEX"] == "M"):
-                print("ERROR: US21 INDIVIDUAL {} {} and INDIVIDUAL {} {} are of same gender but have married".format(husband_individiual_id, husband_name, wife_individiual_id, wife_name))
+            if (self.individualdata[husband_individiual_id]["SEX"] == "M" and self.individualdata[wife_individiual_id][
+                "SEX"] == "M"):
+                print("ERROR: US21 INDIVIDUAL {} {} and INDIVIDUAL {} {} are of same gender but have married".format(
+                    husband_individiual_id, husband_name, wife_individiual_id, wife_name))
                 self.errorLog["ProperGender"] += 1
-
 
             self.prettytablefamily.add_row(
                 [key, marriage, divorce, husband_individiual_id, husband_name, wife_individiual_id, wife_name, child])

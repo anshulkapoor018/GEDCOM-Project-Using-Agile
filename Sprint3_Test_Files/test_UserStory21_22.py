@@ -6,7 +6,7 @@ class TestGedcom(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """ Set up objects with filenames """
-        cls.x = Gedcom("US21_US22_testing.ged")
+        cls.x = Gedcom("US21_US22_testing.ged", "n")
         cls.errorlog = cls.x.analyze_gedcom_file()
 
 
