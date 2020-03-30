@@ -408,6 +408,8 @@ class Gedcom:
             except KeyError:
                 return "No Marriage date found"
 
+            husband_name = self.individualdata[husband_individiual_id]["NAME"]
+            husband_firstname, husband_lastname = husband_name.split()
             wife_name = self.individualdata[wife_individiual_id]["NAME"]
             wife_firstname, wife_lastname = wife_name.split()
 
@@ -483,14 +485,16 @@ class Gedcom:
                     except KeyError:
                         pass
 
-            husband_name = self.individualdata[husband_individiual_id]["NAME"]
+                if self.individualdata[child]["SEX"] == "M":
+                    child_firstname, child_lastname = self.individualdata[child]["NAME"].split()
+                    if child_lastname != husband_lastname:
+                        print("ERROR: US16 INDIVIDUAL {} {} and INDIVIDUAL {} {} have a Father-Child relationship but have different last names".format(husband_individiual_id, husband_firstname + husband_lastname, child, self.individualdata[child]["NAME"]))
+                        self.errorLog["US16_MaleLastNames"] += 1
 
             try:
                 marriage = self.individualdata[husband_individiual_id]["MARRDATE"]
             except KeyError:
                 return "No Marriage date found"
-
-            wife_name = self.individualdata[wife_individiual_id]["NAME"]
 
             try:
                 divorce = self.individualdata[husband_individiual_id]["DIVDATE"]

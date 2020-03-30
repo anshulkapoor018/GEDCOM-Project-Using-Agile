@@ -5,7 +5,9 @@
       <w>deatdate</w>
       <w>donothing</w>
       <w>errorlog</w>
+      <w>firstname</w>
       <w>gedcom</w>
+      <w>lastname</w>
       <w>marr</w>
       <w>marrdate</w>
       <w>marriageday</w>
