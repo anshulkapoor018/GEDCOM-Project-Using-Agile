@@ -388,7 +388,7 @@ class Gedcom:
 
             if abs(datetime.datetime.strptime(self.individualdata[husband_individiual_id]["BIRTDATE"],
                                               '%d %b %Y') - datetime.datetime.strptime(
-                    self.individualdata[wife_individiual_id]["BIRTDATE"], '%d %b %Y')).days > 5475:
+                self.individualdata[wife_individiual_id]["BIRTDATE"], '%d %b %Y')).days > 5475:
                 print("ERROR: US17 FAMILY {} has marriage between descendants and their children".format(key))
                 self.errorLog["DescendantChildrenMarriage"] += 1
 
@@ -429,7 +429,7 @@ class Gedcom:
 
                 if abs(datetime.datetime.strptime(self.individualdata[husband_individiual_id]["BIRTDATE"],
                                                   '%d %b %Y') - datetime.datetime.strptime(
-                        self.individualdata[child]["BIRTDATE"], '%d %b %Y')).days > 29200:
+                    self.individualdata[child]["BIRTDATE"], '%d %b %Y')).days > 29200:
                     print("ERROR: US12 FAMILY {} Parents are too old".format(key))
                 self.errorLog["ParentsTooOld"] += 1
 
@@ -488,7 +488,10 @@ class Gedcom:
                 if self.individualdata[child]["SEX"] == "M":
                     child_firstname, child_lastname = self.individualdata[child]["NAME"].split()
                     if child_lastname != husband_lastname:
-                        print("ERROR: US16 INDIVIDUAL {} {} and INDIVIDUAL {} {} have a Father-Child relationship but have different last names".format(husband_individiual_id, husband_firstname + husband_lastname, child, self.individualdata[child]["NAME"]))
+                        print(
+                            "ERROR: US16 INDIVIDUAL {} {} and INDIVIDUAL {} {} have a Father-Child relationship but have different last names".format(
+                                husband_individiual_id, husband_firstname + husband_lastname, child,
+                                self.individualdata[child]["NAME"]))
                         self.errorLog["US16_MaleLastNames"] += 1
 
             try:
@@ -508,6 +511,27 @@ class Gedcom:
                 child = "NA"
             except ValueError as e:
                 print(e)
+
+            if self.individualdata[husband_individiual_id]["AGE"] > 2 * (
+                    self.individualdata[wife_individiual_id]["AGE"]):
+                print("ERROR: US34 INDIVIDUAL {} {} and INDIVIDUAL {} {} have large age difference".format(
+                    husband_individiual_id, husband_name, wife_individiual_id,
+                    self.individualdata[wife_individiual_id]["NAME"]))
+                self.errorLog["US34_AgeDifference"] += 1
+
+            if self.individualdata[wife_individiual_id]["AGE"] > 2 * (
+                    self.individualdata[husband_individiual_id]["AGE"]):
+                print("ERROR: US34 INDIVIDUAL {} {} and INDIVIDUAL {} {} have large age difference".format(
+                    wife_individiual_id, wife_name, husband_individiual_id,
+                    self.individualdata[husband_individiual_id]["NAME"]))
+                self.errorLog["US34_AgeDifference"] += 1
+
+            if "FAMC" in self.individualdata[husband_individiual_id] and "FAMC" in self.individualdata[wife_individiual_id]:
+                if self.individualdata[husband_individiual_id]["FAMC"] == self.individualdata[wife_individiual_id]["FAMC"]:
+                    print(
+                        "ERROR: US18 INDIVIDUAL {} {} and INDIVIDUAL {} {} are siblings but have married".format(
+                            husband_individiual_id, husband_firstname, wife_individiual_id, wife_firstname))
+                    self.errorLog["US18_SiblingMarriageError"] += 1
 
             if (divorce != "NA") and (div_husband != "NA") and (div_wife != "NA"):
                 if (datetime.datetime.strptime(marriage, '%d %b %Y') > datetime.datetime.strptime(
@@ -588,7 +612,6 @@ class Gedcom:
 
     def donothing(self, nothing):
         pass
-
 
 
 def main():

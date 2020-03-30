@@ -11,12 +11,12 @@ class TestGedcom(unittest.TestCase):
 
 
     def test_MaleLastNames(self):
-        """ To Test if Parents should not marry any of their descendants """
+        """ To Test if Last Name of All the males in Family are same """
         self.assertNotEqual(self.errorlog["US16_MaleLastNames"], 0)
 
-    # def test_RepetitiveID(self):
-    #     """ To Test if There should be fewer than 15 siblings in a family """
-    #     self.assertNotEqual(self.errorlog["RepetitiveID"], 0)
+    def test_SiblingsMarriage(self):
+        """ To Test if Siblings are married or not """
+        self.assertNotEqual(self.errorlog["US18_SiblingMarriageError"], 0)
 
 
 if __name__ == '__main__':
