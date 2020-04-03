@@ -134,6 +134,7 @@ class Gedcom:
                 print("Invalid birthdate Value for {}".format(self.individualdata[key]["NAME"]))
                 sys.exit()
             except KeyError:
+                self.errorLog["US27_Include_individual_ages"] += 1
                 print("Invalid data for {}".format(self.individualdata[key]["NAME"]))
                 sys.exit()
 
@@ -197,15 +198,6 @@ class Gedcom:
                     self.check_divorce(self.individualdata[key]["DIVDATE"], self.individualdata[key]["DEATDATE"], key)
             except KeyError:
                 print("ERROR: US06: divorce can't be after death date for  {}".format(self.individualdata[key]["NAME"]))
-
-            """try:
-                if self.individualdata[key]["FAMC"] != "NA"
-                    siblings_list = defaultdict()
-                    siblings_list[self.individualdata[key]["FAMC"]][self.individualdata[key]["NAME"],
-                                                                    self.individualdata[key]["BIRT"]]
-                    self.check_Siblings_spacing(siblings_list)
-            except KeyError:
-                print("ERROR: US13: {}".format(self.individualdata[key]["NAME"]))"""
 
             if self.individualdata[key]["MARRDATE"] != "NA":
                 try:  # To check if marriage Date is not in future
@@ -377,6 +369,8 @@ class Gedcom:
         test_multiple = []
         age_list = []
         test_order = []
+
+        US26_IDs = defaultdict(int)
 
         for key in sorted(self.familydata.keys()):
 
@@ -551,6 +545,18 @@ class Gedcom:
 
             self.prettytablefamily.add_row(
                 [key, marriage, divorce, husband_individiual_id, husband_name, wife_individiual_id, wife_name, child])
+
+            # Next 10 lines of code is for testing if the individual and family records is consistent with each other
+            US26_IDs[husband_individiual_id] += 1
+            US26_IDs[wife_individiual_id] += 1
+            for i in child:
+                US26_IDs[i] += 1
+
+        for indiv_id in self.individualdata.keys():
+            if indiv_id not in US26_IDs.keys():
+                self.errorLog['US26_Corresponding_entries'] += 1
+                print("Error: US26 INDIVIDUAL {} the information in the individual and family records is not consistent"
+                      .format(indiv_id))
 
     def checkMarriageBeforeDeath(self, death_date, marriage, key):
         """ if the death is before marriage, raise KeyError """
