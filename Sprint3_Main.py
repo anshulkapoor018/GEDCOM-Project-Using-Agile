@@ -25,6 +25,7 @@ class Gedcom:
         self.individualdata = defaultdict(dict)
         self.familydata = defaultdict(dict)
         self.errorLog = defaultdict(int)
+        self.singlesList = []
 
         self.prettytableindividuals = PrettyTable()
         self.prettytablefamily = PrettyTable()
@@ -134,6 +135,7 @@ class Gedcom:
                 print("Invalid birthdate Value for {}".format(self.individualdata[key]["NAME"]))
                 sys.exit()
             except KeyError:
+                self.errorLog["US27_Include_individual_ages"] += 1
                 print("Invalid data for {}".format(self.individualdata[key]["NAME"]))
                 sys.exit()
 
@@ -197,15 +199,6 @@ class Gedcom:
                     self.check_divorce(self.individualdata[key]["DIVDATE"], self.individualdata[key]["DEATDATE"], key)
             except KeyError:
                 print("ERROR: US06: divorce can't be after death date for  {}".format(self.individualdata[key]["NAME"]))
-
-            """try:
-                if self.individualdata[key]["FAMC"] != "NA"
-                    siblings_list = defaultdict()
-                    siblings_list[self.individualdata[key]["FAMC"]][self.individualdata[key]["NAME"],
-                                                                    self.individualdata[key]["BIRT"]]
-                    self.check_Siblings_spacing(siblings_list)
-            except KeyError:
-                print("ERROR: US13: {}".format(self.individualdata[key]["NAME"]))"""
 
             if self.individualdata[key]["MARRDATE"] != "NA":
                 try:  # To check if marriage Date is not in future
@@ -363,12 +356,10 @@ class Gedcom:
             except KeyError:
                 spouse = "NA"
 
+            if age > 30 and spouse == "NA" and alive == True:  # US_31 Listing all the individuals over 30 and not married
+                self.singlesList.append(name)
+
             self.prettytableindividuals.add_row([key, name, gender, birthdate, age, alive, death, child, spouse])
-
-        # if self.bool_to_print:
-        #     # print(self.prettytableindividuals)
-
-        #     print("DISPLAY US31 LIST OF SINGLES: {}".format(single_list))
 
         self.prettytablefamily.field_names = ["ID", "MARRIAGE DATE", "DIVORCE DATE", "HUSBAND ID",
                                               "HUSBAND NAME", "WIFE ID", "WIFE NAME", "CHILDREN"]
@@ -377,6 +368,8 @@ class Gedcom:
         test_multiple = []
         age_list = []
         test_order = []
+
+        US26_IDs = defaultdict(int)
 
         for key in sorted(self.familydata.keys()):
 
@@ -388,7 +381,7 @@ class Gedcom:
 
             if abs(datetime.datetime.strptime(self.individualdata[husband_individiual_id]["BIRTDATE"],
                                               '%d %b %Y') - datetime.datetime.strptime(
-                    self.individualdata[wife_individiual_id]["BIRTDATE"], '%d %b %Y')).days > 5475:
+                self.individualdata[wife_individiual_id]["BIRTDATE"], '%d %b %Y')).days > 5475:
                 print("ERROR: US17 FAMILY {} has marriage between descendants and their children".format(key))
                 self.errorLog["DescendantChildrenMarriage"] += 1
 
@@ -408,6 +401,8 @@ class Gedcom:
             except KeyError:
                 return "No Marriage date found"
 
+            husband_name = self.individualdata[husband_individiual_id]["NAME"]
+            husband_firstname, husband_lastname = husband_name.split()
             wife_name = self.individualdata[wife_individiual_id]["NAME"]
             wife_firstname, wife_lastname = wife_name.split()
 
@@ -427,7 +422,7 @@ class Gedcom:
 
                 if abs(datetime.datetime.strptime(self.individualdata[husband_individiual_id]["BIRTDATE"],
                                                   '%d %b %Y') - datetime.datetime.strptime(
-                        self.individualdata[child]["BIRTDATE"], '%d %b %Y')).days > 29200:
+                    self.individualdata[child]["BIRTDATE"], '%d %b %Y')).days > 29200:
                     print("ERROR: US12 FAMILY {} Parents are too old".format(key))
                 self.errorLog["ParentsTooOld"] += 1
 
@@ -483,14 +478,19 @@ class Gedcom:
                     except KeyError:
                         pass
 
-            husband_name = self.individualdata[husband_individiual_id]["NAME"]
+                if self.individualdata[child]["SEX"] == "M":
+                    child_firstname, child_lastname = self.individualdata[child]["NAME"].split()
+                    if child_lastname != husband_lastname:
+                        print(
+                            "ERROR: US16 INDIVIDUAL {} {} and INDIVIDUAL {} {} have a Father-Child relationship but have different last names".format(
+                                husband_individiual_id, husband_firstname + husband_lastname, child,
+                                self.individualdata[child]["NAME"]))
+                        self.errorLog["US16_MaleLastNames"] += 1
 
             try:
                 marriage = self.individualdata[husband_individiual_id]["MARRDATE"]
             except KeyError:
                 return "No Marriage date found"
-
-            wife_name = self.individualdata[wife_individiual_id]["NAME"]
 
             try:
                 divorce = self.individualdata[husband_individiual_id]["DIVDATE"]
@@ -504,6 +504,27 @@ class Gedcom:
                 child = "NA"
             except ValueError as e:
                 print(e)
+
+            if self.individualdata[husband_individiual_id]["AGE"] > 2 * (
+                    self.individualdata[wife_individiual_id]["AGE"]):
+                print("ERROR: US34 INDIVIDUAL {} {} and INDIVIDUAL {} {} have large age difference".format(
+                    husband_individiual_id, husband_name, wife_individiual_id,
+                    self.individualdata[wife_individiual_id]["NAME"]))
+                self.errorLog["US34_AgeDifference"] += 1
+
+            if self.individualdata[wife_individiual_id]["AGE"] > 2 * (
+                    self.individualdata[husband_individiual_id]["AGE"]):
+                print("ERROR: US34 INDIVIDUAL {} {} and INDIVIDUAL {} {} have large age difference".format(
+                    wife_individiual_id, wife_name, husband_individiual_id,
+                    self.individualdata[husband_individiual_id]["NAME"]))
+                self.errorLog["US34_AgeDifference"] += 1
+
+            if "FAMC" in self.individualdata[husband_individiual_id] and "FAMC" in self.individualdata[wife_individiual_id]:
+                if self.individualdata[husband_individiual_id]["FAMC"] == self.individualdata[wife_individiual_id]["FAMC"]:
+                    print(
+                        "ERROR: US18 INDIVIDUAL {} {} and INDIVIDUAL {} {} are siblings but have married".format(
+                            husband_individiual_id, husband_firstname, wife_individiual_id, wife_firstname))
+                    self.errorLog["US18_SiblingMarriageError"] += 1
 
             if (divorce != "NA") and (div_husband != "NA") and (div_wife != "NA"):
                 if (datetime.datetime.strptime(marriage, '%d %b %Y') > datetime.datetime.strptime(
@@ -523,6 +544,18 @@ class Gedcom:
 
             self.prettytablefamily.add_row(
                 [key, marriage, divorce, husband_individiual_id, husband_name, wife_individiual_id, wife_name, child])
+
+            # Next 10 lines of code is for testing if the individual and family records is consistent with each other
+            US26_IDs[husband_individiual_id] += 1
+            US26_IDs[wife_individiual_id] += 1
+            for i in child:
+                US26_IDs[i] += 1
+
+        for indiv_id in self.individualdata.keys():
+            if indiv_id not in US26_IDs.keys():
+                self.errorLog['US26_Corresponding_entries'] += 1
+                print("Error: US26 INDIVIDUAL {} the information in the individual and family records is not consistent"
+                      .format(indiv_id))
 
     def checkMarriageBeforeDeath(self, death_date, marriage, key):
         """ if the death is before marriage, raise KeyError """
