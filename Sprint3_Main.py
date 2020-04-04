@@ -25,6 +25,7 @@ class Gedcom:
         self.individualdata = defaultdict(dict)
         self.familydata = defaultdict(dict)
         self.errorLog = defaultdict(int)
+        self.singlesList = []
 
         self.prettytableindividuals = PrettyTable()
         self.prettytablefamily = PrettyTable()
@@ -354,6 +355,9 @@ class Gedcom:
                     self.individualdata[key]["SPOUSE"] = spouse
             except KeyError:
                 spouse = "NA"
+
+            if age > 30 and spouse == "NA" and alive == True:  # US_31 Listing all the individuals over 30 and not married
+                self.singlesList.append(name)
 
             self.prettytableindividuals.add_row([key, name, gender, birthdate, age, alive, death, child, spouse])
 

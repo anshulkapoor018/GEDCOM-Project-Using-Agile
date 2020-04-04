@@ -13,7 +13,12 @@ class TestGedcom(unittest.TestCase):
     def test_uniquenamebirthdate(self):
         self.assertNotEqual(self.errorlog["UniqueNameBirthDate"], 0)
 
-
+    def test_listingSingles(self):
+        """ To Test US31_Include_individual_ages while listing """
+        print("------------- Testing the listing of Singles in Gedcom File -------------")
+        g = Gedcom("../gedcomData.ged", "y")
+        print(g.analyze_gedcom_file())
+        print(g.singlesList)
 
 
 if __name__ == '__main__':
