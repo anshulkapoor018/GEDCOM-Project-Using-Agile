@@ -6,18 +6,21 @@ class TestGedcom(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """ Set up objects with filenames """
-        cls.x = Gedcom("US26_testing.ged", "n")
+        cls.x = Gedcom("US26_US27_testing.ged", "y")
         cls.errorlog = cls.x.analyze_gedcom_file()
-        cls.y = Gedcom("US27_testing.ged", "n")
-        cls.errorlog = cls.y.analyze_gedcom_file()
 
     def test_Corresponding_entries(self):
         """ To test if the individual and family records is consistent with each other """
         self.assertNotEqual(self.errorlog["US26_Corresponding_entries"], 0)
 
     def test_Include_individual_ages(self):
-        """ To Test US27_Include_individual_ages """
-        self.assertNotEqual(self.errorlog["US27_Include_individual_ages"], 0)
+        """ To Test US27_Include_individual_ages while listing """
+        # file_name = input("Enter file name: \n")
+        # pretty = input("Do you want pretty table? y/n \n")
+        print("------------- Testing of Include person's current age when listing individuals -------------")
+        g = Gedcom("../gedcomData.ged", "y")
+        print(g.analyze_gedcom_file())
+        print(g.prettytableindividuals)
 
 
 if __name__ == '__main__':
