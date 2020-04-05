@@ -356,7 +356,8 @@ class Gedcom:
             except KeyError:
                 spouse = "NA"
 
-            if age > 30 and spouse == "NA" and alive is True:  # US_31 Listing all the individuals over 30 and not married
+            if age > 30 and spouse == "NA" and alive is True:
+                """ US_31 Creating a list of all individuals who are aged more than 30 and not married """
                 self.singlesList.append(name)
 
             self.prettytableindividuals.add_row([key, name, gender, birthdate, age, alive, death, child, spouse])
