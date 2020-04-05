@@ -15,12 +15,13 @@ class TestGedcom(unittest.TestCase):
 
     def test_Include_individual_ages(self):
         """ To Test US27_Include_individual_ages while listing """
-        # file_name = input("Enter file name: \n")
-        # pretty = input("Do you want pretty table? y/n \n")
         print("------------- Testing of Include person's current age when listing individuals -------------")
         g = Gedcom("../gedcomData.ged", "y")
-        print(g.analyze_gedcom_file())
-        print(g.prettytableindividuals)
+        g.analyze_gedcom_file()
+        self.assertEqual(g.individualdata["I1"]['AGE'], 26)
+        self.assertEqual(g.individualdata["I2"]['AGE'], 61)
+        self.assertEqual(g.individualdata["I17"]['AGE'], 78)
+        self.assertNotEqual(g.individualdata["I15"]['AGE'], 16)
 
 
 if __name__ == '__main__':

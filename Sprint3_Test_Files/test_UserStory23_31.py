@@ -17,8 +17,8 @@ class TestGedcom(unittest.TestCase):
         """ To Test US31_Include_individual_ages while listing """
         print("------------- Testing the listing of Singles in Gedcom File -------------")
         g = Gedcom("../gedcomData.ged", "y")
-        print(g.analyze_gedcom_file())
-        print(g.singlesList)
+        g.analyze_gedcom_file()
+        self.assertEqual(g.singlesList, ['Anu /Kapoor/', 'Prachi /Kapoor/'])
 
 
 if __name__ == '__main__':

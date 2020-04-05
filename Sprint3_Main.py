@@ -356,7 +356,7 @@ class Gedcom:
             except KeyError:
                 spouse = "NA"
 
-            if age > 30 and spouse == "NA" and alive == True:  # US_31 Listing all the individuals over 30 and not married
+            if age > 30 and spouse == "NA" and alive is True:  # US_31 Listing all the individuals over 30 and not married
                 self.singlesList.append(name)
 
             self.prettytableindividuals.add_row([key, name, gender, birthdate, age, alive, death, child, spouse])
@@ -524,8 +524,10 @@ class Gedcom:
                     self.individualdata[husband_individiual_id]["NAME"]))
                 self.errorLog["US34_AgeDifference"] += 1
 
-            if "FAMC" in self.individualdata[husband_individiual_id] and "FAMC" in self.individualdata[wife_individiual_id]:
-                if self.individualdata[husband_individiual_id]["FAMC"] == self.individualdata[wife_individiual_id]["FAMC"]:
+            if "FAMC" in self.individualdata[husband_individiual_id] and "FAMC" in self.individualdata[
+                wife_individiual_id]:
+                if self.individualdata[husband_individiual_id]["FAMC"] == self.individualdata[wife_individiual_id][
+                    "FAMC"]:
                     print(
                         "ERROR: US18 INDIVIDUAL {} {} and INDIVIDUAL {} {} are siblings but have married".format(
                             husband_individiual_id, husband_firstname, wife_individiual_id, wife_firstname))
