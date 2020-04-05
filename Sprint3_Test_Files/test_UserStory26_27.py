@@ -15,7 +15,7 @@ class TestGedcom(unittest.TestCase):
 
     def test_Include_individual_ages(self):
         """ To Test US27_Include_individual_ages while listing """
-        print("------------- Testing of Include person's current age when listing individuals -------------")
+        print("------------- Testing of Include person's current age when listing individuals done -------------")
         g = Gedcom("../gedcomData.ged", "y")
         g.analyze_gedcom_file()
         self.assertEqual(g.individualdata["I1"]['AGE'], 26)

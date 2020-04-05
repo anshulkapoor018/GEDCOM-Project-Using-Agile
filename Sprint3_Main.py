@@ -313,14 +313,13 @@ class Gedcom:
             else:
                 self.samenameandbirthdate.append(name + birthdate)
 
-            # try:
-            #     value["MARRDATE"]
-            #     married_list.append(value["NAME"])
-            #     test_married.append(value["NAME"])
+            try:
+                married_list.append(value["NAME"])
+                test_married.append(value["NAME"])
 
-            # except KeyError:
-            #     single_list.append(value["NAME"])
-            #     test_single.append(value["NAME"])
+            except KeyError:
+                single_list.append(value["NAME"])
+                test_single.append(value["NAME"])
 
             try:
                 death = value["DEATDATE"]
@@ -359,6 +358,11 @@ class Gedcom:
             if age > 30 and spouse == "NA" and alive is True:
                 """ US_31 Creating a list of all individuals who are aged more than 30 and not married """
                 self.singlesList.append(name)
+
+            for i in married_list:
+                if i not in test_married:
+                    print("ERROR: US31 INDIVIDUAL {} {} not in the list of married people".format(key, self.individualdata[key]["NAME"]))
+                    self.errorLog["US31_SinglesList"] += 1
 
             self.prettytableindividuals.add_row([key, name, gender, birthdate, age, alive, death, child, spouse])
 

@@ -177,59 +177,23 @@ Error: US26 INDIVIDUAL ID18 the information in the individual and family records
 Error: US26 INDIVIDUAL ID26 the information in the individual and family records is not consistent
 Error: US26 INDIVIDUAL ID33 the information in the individual and family records is not consistent
 Error: US26 INDIVIDUAL ID28 the information in the individual and family records is not consistent
-------------- Testing the listing of Singles in Gedcom File -------------
-defaultdict(<class 'int'>, {'ParentsTooOld': 20})
-['Anu /Kapoor/', 'Prachi /Kapoor/']
+------------- Testing the listing of Singles in Gedcom File done -------------
 
 
-Ran 2 tests in 0.030s
+Ran 2 tests in 0.035s
 
 OK
 
 Process finished with exit code 0
 
 
+
 // Result of US26_US27_testing.ged
 Error: US26 INDIVIDUAL I90 the information in the individual and family records is not consistent
-------------- Testing of Include person's current age when listing individuals -------------
-defaultdict(<class 'int'>, {'ParentsTooOld': 20})
-+-----+---------------------+--------+-------------+-----+-------+-------------+--------------------+--------+
-|  ID |         NAME        | GENDER |  BIRTH DATE | AGE | ALIVE |    DEATH    |       CHILD        | SPOUSE |
-+-----+---------------------+--------+-------------+-----+-------+-------------+--------------------+--------+
-|  I1 |   Anshul /Kapoor/   |   M    | 18 SEP 1994 |  26 |  True |      NA     |         NA         |   NA   |
-| I10 |   Chitra /Kapoor/   |   F    |  8 AUG 1962 |  58 |  True |      NA     |   ['I12', 'I13']   |   I8   |
-| I11 |    Vandana /Puri/   |   F    |  8 AUG 1967 |  53 |  True |      NA     |   ['I14', 'I15']   |   I9   |
-| I12 |     Anu /Kapoor/    |   F    |  8 SEP 1987 |  33 |  True |      NA     |         NA         |   NA   |
-| I13 |   Aayush /Kapoor/   |   M    | 26 AUG 1991 |  29 |  True |      NA     |         NA         |   NA   |
-| I14 |    Akhil /Kapoor/   |   M    | 15 NOV 1990 |  30 |  True |      NA     |         NA         |   NA   |
-| I15 |    Amal /Kapoor/    |   M    | 17 NOV 1992 |  28 |  True |      NA     |         NA         |   NA   |
-| I16 |    Laxmi /Kapoor/   |   M    |  1 JAN 1907 |  63 | False | 15 JUN 1970 |   ['I4', 'I18']    |  I17   |
-| I17 | Shakuntala /Kapoor/ |   F    |  7 FEB 1910 |  78 | False | 20 OCT 1988 |   ['I4', 'I18']    |  I16   |
-| I18 |    Gopal /Kapoor/   |   M    |  6 JAN 1940 |  80 |  True |      NA     |   ['I20', 'I21']   |  I19   |
-| I19 |    Meena /Kapoor/   |   F    | 14 SEP 1945 |  75 |  True |      NA     |   ['I20', 'I21']   |  I18   |
-|  I2 |    Anil /Kapoor/    |   M    |  8 OCT 1959 |  61 |  True |      NA     | ['I1', 'I6', 'I7'] |   I3   |
-| I20 |    Rahul /Kapoor/   |   M    | 15 JUL 1970 |  50 |  True |      NA     |   ['I24', 'I25']   |  I23   |
-| I21 |    Parul /Kapoor/   |   F    | 17 FEB 1979 |  41 |  True |      NA     |   ['I26', 'I27']   |  I22   |
-| I22 |    Hemant /Arora/   |   M    | 24 JAN 1975 |  44 | False | 10 JAN 2019 |   ['I26', 'I27']   |  I21   |
-| I23 |   Richa /Mehrotra/  |   F    | 12 DEC 1975 |  45 |  True |      NA     |   ['I24', 'I25']   |  I20   |
-| I24 |    Eish /Kapoor/    |   M    | 18 FEB 2000 |  20 |  True |      NA     |         NA         |   NA   |
-| I25 |   Kashish /Kapoor/  |   F    | 20 JUN 2008 |  12 |  True |      NA     |         NA         |   NA   |
-| I26 |     Ansh /Arora/    |   M    | 12 NOV 2004 |  16 |  True |      NA     |         NA         |   NA   |
-| I27 |    Anish /Arora/    |   M    |  9 JUL 2010 |  10 |  True |      NA     |         NA         |   NA   |
-| I28 |   Akash /Mehrotra/  |   M    |  2 FEB 1975 |  45 |  True |      NA     |   ['I29', 'I30']   |  I21   |
-| I29 |  Khitij /Mehrotra/  |   M    | 10 APR 2014 |  6  |  True |      NA     |         NA         |   NA   |
-|  I3 |    Nishi /Dhawan/   |   F    |  1 MAY 1964 |  56 |  True |      NA     | ['I1', 'I6', 'I7'] |   I2   |
-| I30 |  Saanvi /Mehrotra/  |   F    | 15 DEC 2018 |  2  |  True |      NA     |         NA         |   NA   |
-|  I4 |   Pratap /Kapoor/   |   M    | 10 MAY 1932 |  85 | False | 19 DEC 2017 | ['I2', 'I8', 'I9'] |   I5   |
-|  I5 |   Mohini /Kapoor/   |   F    | 15 AUG 1938 |  82 |  True |      NA     | ['I2', 'I8', 'I9'] |   I4   |
-|  I6 |   Prachi /Kapoor/   |   F    | 26 OCT 1987 |  33 |  True |      NA     |         NA         |   NA   |
-|  I7 |    Akul /Kapoor/    |   M    | 18 JUL 1990 |  30 |  True |      NA     |         NA         |   NA   |
-|  I8 |  Rajendra /Kapoor/  |   M    | 24 OCT 1957 |  63 |  True |      NA     |   ['I12', 'I13']   |  I10   |
-|  I9 |   Santosh /Kapoor/  |   M    | 22 OCT 1965 |  55 |  True |      NA     |   ['I14', 'I15']   |  I11   |
-+-----+---------------------+--------+-------------+-----+-------+-------------+--------------------+--------+
+------------- Testing of Include person's current age when listing individuals done -------------
 
 
-Ran 2 tests in 0.032s
+Ran 2 tests in 0.023s
 
 OK
 
