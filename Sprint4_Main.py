@@ -517,14 +517,14 @@ class Gedcom:
 
             if self.individualdata[husband_individiual_id]["AGE"] > 2 * (
                     self.individualdata[wife_individiual_id]["AGE"]):
-                print("ERROR: US34 INDIVIDUAL {} {} and INDIVIDUAL {} {} have large age difference".format(
+                print("ERROR: US34 INDIVIDUAL {} {} and INDIVIDUAL {} {} have large age difference!".format(
                     husband_individiual_id, husband_name, wife_individiual_id,
                     self.individualdata[wife_individiual_id]["NAME"]))
                 self.errorLog["US34_AgeDifference"] += 1
 
             if self.individualdata[wife_individiual_id]["AGE"] > 2 * (
                     self.individualdata[husband_individiual_id]["AGE"]):
-                print("ERROR: US34 INDIVIDUAL {} {} and INDIVIDUAL {} {} have large age difference".format(
+                print("ERROR: US34 INDIVIDUAL {} {} and INDIVIDUAL {} {} have large age difference!".format(
                     wife_individiual_id, wife_name, husband_individiual_id,
                     self.individualdata[husband_individiual_id]["NAME"]))
                 self.errorLog["US34_AgeDifference"] += 1
