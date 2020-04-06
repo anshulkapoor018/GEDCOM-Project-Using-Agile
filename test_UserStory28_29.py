@@ -11,15 +11,16 @@ class TestGedcom(unittest.TestCase):
 
 
     def test_DeceasedList(self):
-        g = Gedcom("US28_US29_testing.ged", "y")
+        """ Test list of deceased people """
+        g = Gedcom("US28_US29_testing.ged", "n")
         g.analyze_gedcom_file()
         self.assertEqual(g.expiredPeople, ['Laxmi /Kapoor/', 'Shakuntala /Kapoor/', 'Hemant /Arora/', 'Pratap /Kapoor/'])
 
-    # def test_RepetitiveID(self):
-    #     """ To Test if There should be fewer than 15 siblings in a family """
-    #     self.assertNotEqual(self.errorlog["RepetitiveID"], 0)
+    
+    def test_OrderSiblings(self):
+        """Test if siblings list is in order"""
+        self.assertNotEqual(self.errorlog["OrderSiblings"], 0)
 
 
 if __name__ == '__main__':
-    # note: there is no main(). Only test cases here
     unittest.main(exit=False, verbosity=2)

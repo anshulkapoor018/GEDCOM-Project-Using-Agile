@@ -359,7 +359,7 @@ class Gedcom:
                 spouse = "NA"
 
             if alive is False:
-                """ US_29 Creating a list of all individuals who are deceased"""
+                """ US29 Creating a list of all individuals who are deceased"""
                 self.expiredPeople.append(name)
 
 
@@ -573,6 +573,15 @@ class Gedcom:
             for i in child:
                 US26_IDs[i] += 1
 
+            age_list.sort(reverse=True)
+            age_list[::-1]
+
+            if(age_list!=test_order):
+                print("ERROR: US28 Age of siblings are not in order ", test_order)
+                self.errorLog["OrderSiblings"] += 1
+
+            # print("Display US28 List of Ordered Age of Siblings", age_list)
+        
         for indiv_id in self.individualdata.keys():
             if indiv_id not in US26_IDs.keys():
                 self.errorLog['US26_Corresponding_entries'] += 1
