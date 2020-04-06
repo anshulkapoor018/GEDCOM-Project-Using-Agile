@@ -26,6 +26,7 @@ class Gedcom:
         self.familydata = defaultdict(dict)
         self.errorLog = defaultdict(int)
         self.singlesList = []
+        self.expiredPeople = []
 
         self.prettytableindividuals = PrettyTable()
         self.prettytablefamily = PrettyTable()
@@ -323,6 +324,8 @@ class Gedcom:
 
             try:
                 death = value["DEATDATE"]
+                deceased_list.append(value["NAME"])
+                test_deceased.append(value["NAME"])
             except KeyError:
                 death = "NA"
             try:
@@ -355,6 +358,11 @@ class Gedcom:
             except KeyError:
                 spouse = "NA"
 
+            if alive is False:
+                """ US_29 Creating a list of all individuals who are deceased"""
+                self.expiredPeople.append(name)
+
+
             if age > 30 and spouse == "NA" and alive is True:
                 """ US_31 Creating a list of all individuals who are aged more than 30 and not married """
                 self.singlesList.append(name)
@@ -364,12 +372,14 @@ class Gedcom:
                     print("ERROR: US31 INDIVIDUAL {} {} not in the list of married people".format(key, self.individualdata[key]["NAME"]))
                     self.errorLog["US31_SinglesList"] += 1
 
+            for k in deceased_list:
+                if k not in test_deceased:
+                    print("ERROR: US29 INDIVIDUAL {} {} not in the list of deceased".format(key, self.individualdata[key][
+                        "NAME"]))
+                    self.errorLog["DeceasedList"] += 1
+
             self.prettytableindividuals.add_row([key, name, gender, birthdate, age, alive, death, child, spouse])
 
-        # if self.bool_to_print:
-        #     # print(self.prettytableindividuals)
-
-        #     print("DISPLAY US31 LIST OF SINGLES: {}".format(single_list))
 
         self.prettytablefamily.field_names = ["ID", "MARRIAGE DATE", "DIVORCE DATE", "HUSBAND ID",
                                               "HUSBAND NAME", "WIFE ID", "WIFE NAME", "CHILDREN"]
