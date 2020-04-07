@@ -393,7 +393,6 @@ class Gedcom:
 
             self.prettytableindividuals.add_row([key, name, gender, birthdate, age, alive, death, child, spouse])
 
-
         self.prettytablefamily.field_names = ["ID", "MARRIAGE DATE", "DIVORCE DATE", "HUSBAND ID",
                                               "HUSBAND NAME", "WIFE ID", "WIFE NAME", "CHILDREN"]
 
@@ -538,18 +537,16 @@ class Gedcom:
             except ValueError as e:
                 print(e)
 
-            if self.individualdata[husband_individiual_id]["AGE"] > 2 * (
-                    self.individualdata[wife_individiual_id]["AGE"]):
+            marriage_date = datetime.datetime.strptime(marriage, '%d %b %Y')
+            husband_age = datetime.datetime.strptime(self.individualdata[husband_individiual_id]["BIRTDATE"], '%d %b %Y')
+            wife_age = datetime.datetime.strptime(self.individualdata[wife_individiual_id]["BIRTDATE"], '%d %b %Y')
+            husband_age_when_Marriage = (marriage_date - husband_age).days
+            wife_age_when_Marriage = (marriage_date - wife_age).days
+
+            if husband_age_when_Marriage >= 2 * wife_age_when_Marriage or wife_age_when_Marriage >= 2 * husband_age_when_Marriage:
                 print("ERROR: US34 INDIVIDUAL {} {} and INDIVIDUAL {} {} have large age difference!".format(
                     husband_individiual_id, husband_name, wife_individiual_id,
                     self.individualdata[wife_individiual_id]["NAME"]))
-                self.errorLog["US34_AgeDifference"] += 1
-
-            if self.individualdata[wife_individiual_id]["AGE"] > 2 * (
-                    self.individualdata[husband_individiual_id]["AGE"]):
-                print("ERROR: US34 INDIVIDUAL {} {} and INDIVIDUAL {} {} have large age difference!".format(
-                    wife_individiual_id, wife_name, husband_individiual_id,
-                    self.individualdata[husband_individiual_id]["NAME"]))
                 self.errorLog["US34_AgeDifference"] += 1
 
             if "FAMC" in self.individualdata[husband_individiual_id] and "FAMC" in self.individualdata[
@@ -589,12 +586,12 @@ class Gedcom:
             age_list.sort(reverse=True)
             age_list[::-1]
 
-            if(age_list!=test_order):
-                print("ERROR: US28 Age of siblings are not in order ", test_order)
+            if age_list != test_order:
+                # print("ERROR: US28 Age of siblings are not in order ", test_order)
                 self.errorLog["OrderSiblings"] += 1
 
             # print("Display US28 List of Ordered Age of Siblings", age_list)
-        
+
         for indiv_id in self.individualdata.keys():
             if indiv_id not in US26_IDs.keys():
                 self.errorLog['US26_Corresponding_entries'] += 1

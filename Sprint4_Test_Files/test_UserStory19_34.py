@@ -14,9 +14,9 @@ class TestGedcom(unittest.TestCase):
         """ Test list of recently deceased people """
         self.assertEqual(self.recentDeceased, ['Hemant /Arora/'])
 
-    # def test_OrderSiblings(self):
-    #     """Test if siblings list is in order"""
-    #     self.assertNotEqual(self.errorlog["OrderSiblings"], 0)
+    def test_CoupleAgeDifference(self):
+        """Test if Couple has very large Age difference"""
+        self.assertNotEqual(self.errorlog["US34_AgeDifference"], 0)
 
 
 if __name__ == '__main__':
