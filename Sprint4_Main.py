@@ -661,9 +661,9 @@ class Gedcom:
 
 
 def main():
-    # file_name = input("Enter file name: \n")
-    # pretty = input("Do you want pretty table? y/n \n")
-    g = Gedcom("gedcomData.ged", "y")
+    file_name = input("Enter file name: \n")
+    pretty = input("Do you want pretty table? y/n \n")
+    g = Gedcom(file_name, pretty)
     print(g.analyze_gedcom_file())
     print(g.prettytableindividuals)
     print(g.prettytablefamily)
