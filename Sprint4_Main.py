@@ -26,6 +26,8 @@ class Gedcom:
         self.familydata = defaultdict(dict)
         self.errorLog = defaultdict(int)
         self.singlesList = []
+        self.expiredPeople = []
+        self.recentDeceased = []
 
         self.prettytableindividuals = PrettyTable()
         self.prettytablefamily = PrettyTable()
@@ -298,6 +300,8 @@ class Gedcom:
         test_married = []
         deceased_list = []
         test_deceased = []
+        recent_deceased_list = []
+        recent_test_deceased = []
 
         for key in sorted(self.individualdata.keys()):
             value = self.individualdata[key]
@@ -323,6 +327,8 @@ class Gedcom:
 
             try:
                 death = value["DEATDATE"]
+                deceased_list.append(value["NAME"])
+                test_deceased.append(value["NAME"])
             except KeyError:
                 death = "NA"
             try:
@@ -355,6 +361,15 @@ class Gedcom:
             except KeyError:
                 spouse = "NA"
 
+            if alive is False:
+                """ US29 Creating a list of all individuals who are deceased"""
+                self.expiredPeople.append(name)
+                death_date = datetime.datetime.strptime(death, '%d %b %Y')
+                if (datetime.datetime.now() - death_date).days <= 30:
+                    self.recentDeceased.append(name)
+                    recent_deceased_list.append(name)
+                    recent_test_deceased.append(name)
+
             if age > 30 and spouse == "NA" and alive is True:
                 """ US_31 Creating a list of all individuals who are aged more than 30 and not married """
                 self.singlesList.append(name)
@@ -364,12 +379,20 @@ class Gedcom:
                     print("ERROR: US31 INDIVIDUAL {} {} not in the list of married people".format(key, self.individualdata[key]["NAME"]))
                     self.errorLog["US31_SinglesList"] += 1
 
+            for k in deceased_list:
+                if k not in test_deceased:
+                    print("ERROR: US29 INDIVIDUAL {} {} not in the list of deceased".format(key, self.individualdata[key][
+                        "NAME"]))
+                    self.errorLog["DeceasedList"] += 1
+
+            for k in recent_deceased_list:
+                if k not in recent_test_deceased:
+                    print("ERROR: US36 INDIVIDUAL {} {} not in the list of recently deceased".format(key, self.individualdata[key][
+                        "NAME"]))
+                    self.errorLog["US36_RecentDeceasedList"] += 1
+
             self.prettytableindividuals.add_row([key, name, gender, birthdate, age, alive, death, child, spouse])
 
-        # if self.bool_to_print:
-        #     # print(self.prettytableindividuals)
-
-        #     print("DISPLAY US31 LIST OF SINGLES: {}".format(single_list))
 
         self.prettytablefamily.field_names = ["ID", "MARRIAGE DATE", "DIVORCE DATE", "HUSBAND ID",
                                               "HUSBAND NAME", "WIFE ID", "WIFE NAME", "CHILDREN"]
@@ -563,6 +586,15 @@ class Gedcom:
             for i in child:
                 US26_IDs[i] += 1
 
+            age_list.sort(reverse=True)
+            age_list[::-1]
+
+            if(age_list!=test_order):
+                print("ERROR: US28 Age of siblings are not in order ", test_order)
+                self.errorLog["OrderSiblings"] += 1
+
+            # print("Display US28 List of Ordered Age of Siblings", age_list)
+        
         for indiv_id in self.individualdata.keys():
             if indiv_id not in US26_IDs.keys():
                 self.errorLog['US26_Corresponding_entries'] += 1
@@ -632,9 +664,9 @@ class Gedcom:
 
 
 def main():
-    file_name = input("Enter file name: \n")
-    pretty = input("Do you want pretty table? y/n \n")
-    g = Gedcom(file_name, pretty)
+    # file_name = input("Enter file name: \n")
+    # pretty = input("Do you want pretty table? y/n \n")
+    g = Gedcom("gedcomData.ged", "y")
     print(g.analyze_gedcom_file())
     print(g.prettytableindividuals)
     print(g.prettytablefamily)
