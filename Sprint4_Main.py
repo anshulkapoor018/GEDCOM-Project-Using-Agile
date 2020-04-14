@@ -380,7 +380,7 @@ class Gedcom:
                 birth_day = datetime.datetime.strptime(birthdate, '%d %b %Y')
                 date1 = date(present_day.year, birth_day.month, birth_day.day)
                 date2 = date(present_day.year, present_day.month, present_day.day)
-                print(date1, date2, (date1 - date2).days)
+                # print(date1, date2, (date1 - date2).days)
                 if 30 >= (date1 - date2).days > 0:
                     """US38 Recent Birthday """
                     self.BirthdayList.append(name)
@@ -416,7 +416,7 @@ class Gedcom:
             #################################
 
             self.prettytableindividuals.add_row([key, name, gender, birthdate, age, alive, death, child, spouse])
-        print(self.BirthdayList)
+
         self.prettytablefamily.field_names = ["ID", "MARRIAGE DATE", "DIVORCE DATE", "HUSBAND ID",
                                               "HUSBAND NAME", "WIFE ID", "WIFE NAME", "CHILDREN"]
 
@@ -441,7 +441,7 @@ class Gedcom:
                 self.unique_families_by_spouses.append(spousename_plus_marriagedates)
             else:
                 print("ERROR: US24 FAMILY {} is not unique".format(key))
-                self.errorlog["UniqueFamily"] += 1
+                self.errorLog["US24_UniqueFamily"] += 1
             ###########################
             if abs(datetime.datetime.strptime(self.individualdata[husband_individiual_id]["BIRTDATE"],
                                               '%d %b %Y') - datetime.datetime.strptime(
@@ -693,9 +693,9 @@ class Gedcom:
 
 
 def main():
-    # file_name = input("Enter file name: \n")
-    # pretty = input("Do you want pretty table? y/n \n")
-    g = Gedcom("gedcomData.ged", "y")
+    file_name = input("Enter file name: \n")
+    pretty = input("Do you want pretty table? y/n \n")
+    g = Gedcom(file_name, pretty)
     print(g.analyze_gedcom_file())
     print(g.prettytableindividuals)
     print(g.prettytablefamily)

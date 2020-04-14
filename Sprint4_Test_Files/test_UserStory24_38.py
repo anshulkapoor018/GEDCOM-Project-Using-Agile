@@ -18,7 +18,7 @@ class TestGedcom(unittest.TestCase):
 
     def test_uniqueFamily(self):
         """Test Unique Families by spouses"""
-        self.assertEqual(self.errorlog["UniqueFamily"], 0)
+        self.assertNotEqual(self.errorlog["US24_UniqueFamily"], 0)
 
 
 if __name__ == '__main__':
