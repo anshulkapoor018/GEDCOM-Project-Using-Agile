@@ -1,0 +1,23 @@
+from Sprint4_Main import Gedcom
+import unittest
+
+
+class TestGedcom(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        """ Set up objects with filenames """
+        cls.x = Gedcom("US24_US38_testing.ged", "n")
+        cls.errorlog = cls.x.analyze_gedcom_file()
+        cls.recentDeceased = cls.x.recentDeceased
+
+    def test_RecentBirthdayList(self):
+        """ Test list of recent birthday """
+        self.assertEqual(self.BirthdayList, ['Nishi /Dhawan/'])
+
+    def test_uniqueFamily(self):
+        """Test Unique Families by spouses"""
+        self.assertNotEqual(self.errorlog["UniqueFamily"], 0)
+
+
+if __name__ == '__main__':
+    unittest.main(exit=False, verbosity=2)
