@@ -9,14 +9,16 @@ class TestGedcom(unittest.TestCase):
         cls.x = Gedcom("US24_US38_testing.ged", "n")
         cls.errorlog = cls.x.analyze_gedcom_file()
         cls.recentDeceased = cls.x.recentDeceased
+        cls.upcomingBirthdayList = cls.x.BirthdayList
 
     def test_RecentBirthdayList(self):
         """ Test list of recent birthday """
-        self.assertEqual(self.BirthdayList, ['Nishi /Dhawan/'])
+        self.assertEqual(self.upcomingBirthdayList, ['Nishi /Dhawan/'])
+        self.assertNotEqual(self.upcomingBirthdayList, ['Anshul /Kapoor/'])
 
     def test_uniqueFamily(self):
         """Test Unique Families by spouses"""
-        self.assertNotEqual(self.errorlog["UniqueFamily"], 0)
+        self.assertEqual(self.errorlog["UniqueFamily"], 0)
 
 
 if __name__ == '__main__':

@@ -376,8 +376,12 @@ class Gedcom:
             #US_38
             #########################
             if alive is True:
+                present_day = datetime.datetime.now()
                 birth_day = datetime.datetime.strptime(birthdate, '%d %b %Y')
-                if ((datetime.datetime.now() - birth_day ).days) <= 30:
+                date1 = date(present_day.year, birth_day.month, birth_day.day)
+                date2 = date(present_day.year, present_day.month, present_day.day)
+                print(date1, date2, (date1 - date2).days)
+                if 30 >= (date1 - date2).days > 0:
                     """US38 Recent Birthday """
                     self.BirthdayList.append(name)
                     recent_birthday_list.append(name)
@@ -403,7 +407,7 @@ class Gedcom:
                     print("ERROR: US36 INDIVIDUAL {} {} not in the list of recently deceased".format(key, self.individualdata[key][
                         "NAME"]))
                     self.errorLog["US36_RecentDeceasedList"] += 1
-            #US__38  ############################     
+            #US__38  ############################
             for k in recent_birthday_list:
                 if k not in recent_test_birthday_list:
                     print("ERROR: US38 INDIVIDUAL {} {} not in the list of recent birthday".format(key, self.individualdata[key][
@@ -412,7 +416,7 @@ class Gedcom:
             #################################
 
             self.prettytableindividuals.add_row([key, name, gender, birthdate, age, alive, death, child, spouse])
-
+        print(self.BirthdayList)
         self.prettytablefamily.field_names = ["ID", "MARRIAGE DATE", "DIVORCE DATE", "HUSBAND ID",
                                               "HUSBAND NAME", "WIFE ID", "WIFE NAME", "CHILDREN"]
 
@@ -689,9 +693,9 @@ class Gedcom:
 
 
 def main():
-    file_name = input("Enter file name: \n")
-    pretty = input("Do you want pretty table? y/n \n")
-    g = Gedcom(file_name, pretty)
+    # file_name = input("Enter file name: \n")
+    # pretty = input("Do you want pretty table? y/n \n")
+    g = Gedcom("gedcomData.ged", "y")
     print(g.analyze_gedcom_file())
     print(g.prettytableindividuals)
     print(g.prettytablefamily)
