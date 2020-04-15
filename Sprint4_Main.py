@@ -302,6 +302,8 @@ class Gedcom:
         test_deceased = []
         recent_deceased_list = []
         recent_test_deceased = []
+        # children_list is used with US20
+        brothers_list = []
 
         for key in sorted(self.individualdata.keys()):
             value = self.individualdata[key]
@@ -376,22 +378,69 @@ class Gedcom:
 
             for i in married_list:
                 if i not in test_married:
-                    print("ERROR: US31 INDIVIDUAL {} {} not in the list of married people".format(key, self.individualdata[key]["NAME"]))
+                    print("ERROR: US31 INDIVIDUAL {} {} not in the list of married people".format(key,
+                                                                                                  self.individualdata[
+                                                                                                      key]["NAME"]))
                     self.errorLog["US31_SinglesList"] += 1
 
             for k in deceased_list:
                 if k not in test_deceased:
-                    print("ERROR: US29 INDIVIDUAL {} {} not in the list of deceased".format(key, self.individualdata[key][
-                        "NAME"]))
+                    print(
+                        "ERROR: US29 INDIVIDUAL {} {} not in the list of deceased".format(key, self.individualdata[key][
+                            "NAME"]))
                     self.errorLog["DeceasedList"] += 1
 
             for k in recent_deceased_list:
                 if k not in recent_test_deceased:
-                    print("ERROR: US36 INDIVIDUAL {} {} not in the list of recently deceased".format(key, self.individualdata[key][
-                        "NAME"]))
+                    print("ERROR: US36 INDIVIDUAL {} {} not in the list of recently deceased".format(key,
+                                                                                                     self.individualdata[
+                                                                                                         key][
+                                                                                                         "NAME"]))
                     self.errorLog["US36_RecentDeceasedList"] += 1
 
             self.prettytableindividuals.add_row([key, name, gender, birthdate, age, alive, death, child, spouse])
+
+            """ the next 24 (406-429_+_306) lines is the implementation of US20
+                by checking if the spouse, father, and mother are brothers
+            """
+            if child not in brothers_list:
+                brothers_list.append(child)
+
+        for i in brothers_list:
+            for ids in self.individualdata.keys():
+                try:
+                    spouse_Id = self.individualdata[ids]["SPOUSE"]
+                    father_Id = self.individualdata[ids]["father"]
+                    mather_Id = self.individualdata[ids]["mather"]
+                except KeyError:
+                    continue
+
+                if spouse_Id != "NA":
+                    if spouse_Id in i:
+                        if father_Id in i:
+                            self.errorLog['US20_Aunts_and_Uncles'] += 1
+                            print("Aunts and uncles should not marry their nieces or nephews;"
+                                  " {} is married to father's side (Aunt or Uncle)".format(
+                                self.individualdata[ids]["NAME"]))
+                        elif mather_Id in i:
+                            self.errorLog['US20_Aunts and Uncles'] += 1
+                            print("Aunts and uncles should not marry their nieces or nephews;"
+                                  " {} is married to mather's side (Aunt or Uncle)".format(
+                                self.individualdata[ids]["NAME"]))
+
+        """ Next 12 (432-443) lines is to implement US33 """
+        for i in self.individualdata.keys():
+            try:
+                father_idx = self.individualdata[i]["father"]
+                mather_idx = self.individualdata[i]["mather"]
+            except KeyError:
+                continue
+
+            if not self.individualdata[father_idx]["ALIVE"] and not self.individualdata[mather_idx]["ALIVE"] and \
+                    self.individualdata[i]["AGE"] < 18:
+                self.errorLog['US33_List_orphans'] += 1
+                print("US33: List all orphaned children (both parents dead and child < 18 years old) in a GEDCOM file"
+                      "{} is an orphan".format(self.individualdata[i]["NAME"]))
 
         self.prettytablefamily.field_names = ["ID", "MARRIAGE DATE", "DIVORCE DATE", "HUSBAND ID",
                                               "HUSBAND NAME", "WIFE ID", "WIFE NAME", "CHILDREN"]
@@ -538,7 +587,8 @@ class Gedcom:
                 print(e)
 
             marriage_date = datetime.datetime.strptime(marriage, '%d %b %Y')
-            husband_age = datetime.datetime.strptime(self.individualdata[husband_individiual_id]["BIRTDATE"], '%d %b %Y')
+            husband_age = datetime.datetime.strptime(self.individualdata[husband_individiual_id]["BIRTDATE"],
+                                                     '%d %b %Y')
             wife_age = datetime.datetime.strptime(self.individualdata[wife_individiual_id]["BIRTDATE"], '%d %b %Y')
             husband_age_when_Marriage = (marriage_date - husband_age).days
             wife_age_when_Marriage = (marriage_date - wife_age).days
@@ -577,12 +627,6 @@ class Gedcom:
             self.prettytablefamily.add_row(
                 [key, marriage, divorce, husband_individiual_id, husband_name, wife_individiual_id, wife_name, child])
 
-            # Next 10 lines of code is for testing if the individual and family records is consistent with each other
-            US26_IDs[husband_individiual_id] += 1
-            US26_IDs[wife_individiual_id] += 1
-            for i in child:
-                US26_IDs[i] += 1
-
             age_list.sort(reverse=True)
             age_list[::-1]
 
@@ -592,11 +636,18 @@ class Gedcom:
 
             # print("Display US28 List of Ordered Age of Siblings", age_list)
 
-        for indiv_id in self.individualdata.keys():
-            if indiv_id not in US26_IDs.keys():
+            # Next 10 lines of code is for testing if the individual and family records is consistent with each other
+            US26_IDs[husband_individiual_id] += 1
+            US26_IDs[wife_individiual_id] += 1
+            for i in child:
+                US26_IDs[i] += 1
+
+        for IDs in US26_IDs.keys():
+            if IDs not in self.individualdata.keys():
                 self.errorLog['US26_Corresponding_entries'] += 1
-                print("Error: US26 INDIVIDUAL {} the information in the individual and family records is not consistent"
-                      .format(indiv_id))
+                print(
+                    "Error: US26 INDIVIDUAL {} the information in the individual and family records is not consistent"
+                    .format(indiv_id))
 
     def checkMarriageBeforeDeath(self, death_date, marriage, key):
         """ if the death is before marriage, raise KeyError """
