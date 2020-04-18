@@ -1,0 +1,414 @@
++-----+---------------------+--------+-------------+-----+-------+-------------+--------------------+--------+
+|  ID |         NAME        | GENDER |  BIRTH DATE | AGE | ALIVE |    DEATH    |       CHILD        | SPOUSE |
++-----+---------------------+--------+-------------+-----+-------+-------------+--------------------+--------+
+|  I1 |   Anshul /Kapoor/   |   M    | 18 SEP 1994 |  26 |  True |      NA     |         NA         |   NA   |
+| I10 |   Chitra /Kapoor/   |   F    |  8 AUG 1962 |  58 |  True |      NA     |   ['I12', 'I13']   |   I8   |
+| I11 |    Vandana /Puri/   |   F    |  8 AUG 1967 |  53 |  True |      NA     |   ['I14', 'I15']   |   I9   |
+| I12 |     Anu /Kapoor/    |   F    |  8 SEP 1987 |  33 |  True |      NA     |         NA         |   NA   |
+| I13 |   Aayush /Kapoor/   |   M    | 26 AUG 1991 |  29 |  True |      NA     |         NA         |   NA   |
+| I14 |    Akhil /Kapoor/   |   M    | 15 NOV 1990 |  30 |  True |      NA     |         NA         |   NA   |
+| I15 |    Amal /Kapoor/    |   M    | 17 NOV 1992 |  28 |  True |      NA     |         NA         |   NA   |
+| I16 |    Laxmi /Kapoor/   |   M    |  1 JAN 1907 |  63 | False | 15 JUN 1970 |   ['I4', 'I18']    |  I17   |
+| I17 | Shakuntala /Kapoor/ |   F    |  7 FEB 1910 |  78 | False | 20 OCT 1988 |   ['I4', 'I18']    |  I16   |
+| I18 |    Gopal /Kapoor/   |   M    |  6 JAN 1940 |  80 |  True |      NA     |   ['I20', 'I21']   |  I19   |
+| I19 |    Meena /Kapoor/   |   F    | 14 SEP 1945 |  75 |  True |      NA     |   ['I20', 'I21']   |  I18   |
+|  I2 |    Anil /Kapoor/    |   M    |  8 OCT 1959 |  61 |  True |      NA     | ['I1', 'I6', 'I7'] |   I3   |
+| I20 |    Rahul /Kapoor/   |   M    | 15 JUL 1970 |  50 |  True |      NA     |   ['I24', 'I25']   |  I23   |
+| I21 |    Parul /Kapoor/   |   F    | 17 FEB 1979 |  41 |  True |      NA     |   ['I26', 'I27']   |  I22   |
+| I22 |    Hemant /Arora/   |   M    | 24 JAN 1975 |  44 | False | 10 JAN 2019 |   ['I26', 'I27']   |  I21   |
+| I23 |   Richa /Mehrotra/  |   F    | 12 DEC 1975 |  45 |  True |      NA     |   ['I24', 'I25']   |  I20   |
+| I24 |    Eish /Kapoor/    |   M    | 18 FEB 2000 |  20 |  True |      NA     |         NA         |   NA   |
+| I25 |   Kashish /Kapoor/  |   F    | 20 JUN 2008 |  12 |  True |      NA     |         NA         |   NA   |
+| I26 |     Ansh /Arora/    |   M    | 12 NOV 2004 |  16 |  True |      NA     |         NA         |   NA   |
+| I27 |    Anish /Arora/    |   M    |  9 JUL 2010 |  10 |  True |      NA     |         NA         |   NA   |
+| I28 |   Akash /Mehrotra/  |   M    |  2 FEB 1975 |  45 |  True |      NA     |   ['I29', 'I30']   |  I21   |
+| I29 |  Khitij /Mehrotra/  |   M    | 10 APR 2014 |  6  |  True |      NA     |         NA         |   NA   |
+|  I3 |    Nishi /Dhawan/   |   F    |  1 MAY 1964 |  56 |  True |      NA     | ['I1', 'I6', 'I7'] |   I2   |
+| I30 |  Saanvi /Mehrotra/  |   F    | 15 DEC 2018 |  2  |  True |      NA     |         NA         |   NA   |
+|  I4 |   Pratap /Kapoor/   |   M    | 10 MAY 1932 |  85 | False | 19 DEC 2017 | ['I2', 'I8', 'I9'] |   I5   |
+|  I5 |   Mohini /Kapoor/   |   F    | 15 AUG 1938 |  82 |  True |      NA     | ['I2', 'I8', 'I9'] |   I4   |
+|  I6 |   Prachi /Kapoor/   |   F    | 26 OCT 1987 |  33 |  True |      NA     |         NA         |   NA   |
+|  I7 |    Akul /Kapoor/    |   M    | 18 JUL 1990 |  30 |  True |      NA     |         NA         |   NA   |
+|  I8 |  Rajendra /Kapoor/  |   M    | 24 OCT 1957 |  63 |  True |      NA     |   ['I12', 'I13']   |  I10   |
+|  I9 |   Santosh /Kapoor/  |   M    | 22 OCT 1965 |  55 |  True |      NA     |   ['I14', 'I15']   |  I11   |
++-----+---------------------+--------+-------------+-----+-------+-------------+--------------------+--------+
++----+---------------+--------------+------------+-------------------+---------+---------------------+--------------------+
+| ID | MARRIAGE DATE | DIVORCE DATE | HUSBAND ID |    HUSBAND NAME   | WIFE ID |      WIFE NAME      |      CHILDREN      |
++----+---------------+--------------+------------+-------------------+---------+---------------------+--------------------+
+| F1 |  26 NOV 1986  |      NA      |     I2     |   Anil /Kapoor/   |    I3   |    Nishi /Dhawan/   | ['I1', 'I6', 'I7'] |
+| F2 |  16 FEB 1956  |      NA      |     I4     |  Pratap /Kapoor/  |    I5   |   Mohini /Kapoor/   | ['I2', 'I8', 'I9'] |
+| F3 |   1 JAN 1930  |      NA      |    I16     |   Laxmi /Kapoor/  |   I17   | Shakuntala /Kapoor/ |   ['I4', 'I18']    |
+| F4 |  17 JAN 1985  |      NA      |     I8     | Rajendra /Kapoor/ |   I10   |   Chitra /Kapoor/   |   ['I12', 'I13']   |
+| F5 |  12 MAY 1989  |      NA      |     I9     |  Santosh /Kapoor/ |   I11   |    Vandana /Puri/   |   ['I14', 'I15']   |
+| F6 |   7 JUL 1968  |      NA      |    I18     |   Gopal /Kapoor/  |   I19   |    Meena /Kapoor/   |   ['I20', 'I21']   |
+| F7 |   4 MAY 1999  |      NA      |    I20     |   Rahul /Kapoor/  |   I23   |   Richa /Mehrotra/  |   ['I24', 'I25']   |
+| F8 |   1 FEB 2013  |      NA      |    I28     |  Akash /Mehrotra/ |   I21   |    Parul /Kapoor/   |   ['I29', 'I30']   |
+| F9 |   2 MAR 2002  |      NA      |    I22     |   Hemant /Arora/  |   I21   |    Parul /Kapoor/   |   ['I26', 'I27']   |
++----+---------------+--------------+------------+-------------------+---------+---------------------+--------------------+
+
+-------------------------------------------------------------------------------------------------------------
+// Sprint 4 Demonstration
+// Result of US20_US33_testing.ged
+Aunts and uncles should not marry their nieces or nephews; test_M_US20 /Kapoor/ is married to father's side (Aunt or Uncle)
+US33: List all orphaned children (both parents dead and child < 18 years old) in a GEDCOM filetest_US33 /Kapoor/ is an orphan
+
+Process finished with exit code 0
+
+Ran 2 tests in 0.020s
+
+// Result of US24_US38_testing.ged
+ERROR: US24 FAMILY F5 is not unique
+
+Process finished with exit code 0
+
+Ran 2 tests in 0.017s
+
+OK
+
+// Result of US28_US29_testing.ged
+Process finished with exit code 0
+
+Ran 2 tests in 0.027s
+
+OK
+
+// Result of US34_US36_testing.ged
+ERROR: US17 FAMILY F3 has marriage between descendants and their children
+ERROR: US34 INDIVIDUAL I16 Laxmi /Kapoor/ and INDIVIDUAL I17 Shakuntala /Kapoor/ have large age difference!
+
+Ran 2 tests in 0.015s
+OK
+
+-------------------------------------------------------------------------------------------------------------
+
+// Sprint 3 Demonstration
+// Result of US16_US18_testing.ged
+ERROR: US16 INDIVIDUAL I2 Anil/Kapoor/ and INDIVIDUAL I1 Anshul /Kumar/ have a Father-Child relationship but have different last names
+ERROR: US18 INDIVIDUAL I7 Akul and INDIVIDUAL I6 Prachi are siblings but have married
+ERROR: US16 INDIVIDUAL I28 Akash/Mehrotra/ and INDIVIDUAL I29 Khitij /Mehra/ have a Father-Child relationship but have different last names
+
+
+Ran 2 tests in 0.021s
+
+OK
+
+
+// Result of US21_US22_testing.ged
+ERROR: US22 INDIVIDUAL ID11 has a repetitive ID
+ERROR: US11 INDIVIDUAL ID32 HAS DONE BIGAMY
+ERROR: US10 INDIVIDUAL () ID03 has married before the age of 14
+ERROR: US02 INDIVIDUAL ID03 has marriage Date before Birth
+ERROR: US10 INDIVIDUAL () ID41 has married before the age of 14
+ERROR: US10 INDIVIDUAL () ID38 has married before the age of 14
+ERROR: US10 INDIVIDUAL () ID39 has married before the age of 14
+ERROR: US10 INDIVIDUAL () ID40 has married before the age of 14
+ERROR: US05: marriage can't be after death for Priyanka /Puri/
+ERROR: US06: divorce can't be after death date for  Priyanka /Puri/
+ERROR: US10 INDIVIDUAL () ID10 has married before the age of 14
+ERROR: US02 INDIVIDUAL ID10 has marriage Date before Birth
+ERROR: US03 INDIVIDUAL () ID10 has Death date Date before Birth date
+ERROR: US07 INDIVIDUAL () ID32 has AGE greater than 150
+ERROR: US05: marriage can't be after death for Ajay /Kapoor/
+ERROR: US03 INDIVIDUAL () ID28 has Death date Date before Birth date
+ERROR: US05: marriage can't be after death for Divya /Puri/
+ERROR: US05: marriage can't be after death for Akhil /Kapoor/
+ERROR: US23 INDIVIDUAL ID33 Rahul /Kapoor/ does not have a unique name and birth date
+ERROR: US23 INDIVIDUAL ID39 T /Kapoor/ does not have a unique name and birth date
+ERROR: US23 INDIVIDUAL ID40 T /Kapoor/ does not have a unique name and birth date
+ERROR: US17 FAMILY F10 has marriage between descendants and their children
+ERROR: US21 INDIVIDUAL ID31 Rahul /Kapoor/ and INDIVIDUAL ID32 Sarath /Kapoor/ are of same gender but have married
+ERROR: US09 Family F12 has Child Rajeev with Birth date '09 AUG 1925' who was born after 9 months after Fathers Death '20 DEC 1921'
+ERROR: US34 INDIVIDUAL ID09 Nisha /Kapoor/ and INDIVIDUAL ID10 Ashwin /Mehrotra/ have large age difference
+ERROR: US18 INDIVIDUAL ID10 Ashwin and INDIVIDUAL ID09 Nisha are siblings but have married
+ERROR: US17 FAMILY F13 has marriage between descendants and their children
+ERROR: US12 FAMILY F13 Parents are too old
+ERROR: US08 Family F13 has Child Nisha with Birth date '02 AUG 1922' who was born 9 Months after Divorce of parents '07 APR 1882'
+ERROR: US09 Family F13 has Child Nisha with Birth date '02 AUG 1922' who was born after 9 months after Fathers Death '20 DEC 1919'
+ERROR: US09 Family F13 has Child Nisha with Birth date '02 AUG 1922' who was born after mothers death '01 OCT 1920'
+ERROR: US12 FAMILY F13 Parents are too old
+ERROR: US08 Family F13 has Child Ashwin with Birth date '03 AUG 1922' who was born 9 Months after Divorce of parents '07 APR 1882'
+ERROR: US09 Family F13 has Child Ashwin with Birth date '03 AUG 1922' who was born after 9 months after Fathers Death '20 DEC 1919'
+ERROR: US09 Family F13 has Child Ashwin with Birth date '03 AUG 1922' who was born after mothers death '01 OCT 1920'
+ERROR: US34 INDIVIDUAL ID08 Praveen /Mehrotra/ and INDIVIDUAL ID07 Priyanka /Puri/ have large age difference
+ERROR: US04 INDIVIDUAL ID08 Praveen /Mehrotra/ has Marriage After Divorce
+ERROR: US09 Family F14 has Child Kapoor with Birth date '16 JUN 1985' who was born after 9 months after Fathers Death '10 FEB 1950'
+ERROR: US16 INDIVIDUAL ID06 Arora/Mehrotra/ and INDIVIDUAL ID03 Kapoor /Arora/ have a Father-Child relationship but have different last names
+ERROR: US34 INDIVIDUAL ID05 Laxmi /Arora/ and INDIVIDUAL ID06 Arora /Mehrotra/ have large age difference
+ERROR: US17 FAMILY F15 has marriage between descendants and their children
+ERROR: US15 FAMILY F15 more than 15 siblings
+ERROR: US16 INDIVIDUAL ID03 Kapoor/Arora/ and INDIVIDUAL ID01 Anshul /Kapoor/ have a Father-Child relationship but have different last names
+ERROR: US14 Multiple births <= 5: No more than five siblings should be born at the same time in family with ID: F15.
+ERROR: US08 Family F17 has Child T with Birth date '10 MAY 2008' who was born before parents marriage '30 APR 2010'
+ERROR: US16 INDIVIDUAL ID36 R/Mehrotra/ and INDIVIDUAL ID38 T /Kapoor/ have a Father-Child relationship but have different last names
+ERROR: US08 Family F17 has Child T with Birth date '10 MAY 2008' who was born before parents marriage '30 APR 2010'
+ERROR: US16 INDIVIDUAL ID36 R/Mehrotra/ and INDIVIDUAL ID39 T /Kapoor/ have a Father-Child relationship but have different last names
+ERROR: US08 Family F18 has Child T with Birth date '10 MAY 2008' who was born before parents marriage '30 APR 2010'
+Error: US26 INDIVIDUAL ID18 the information in the individual and family records is not consistent
+Error: US26 INDIVIDUAL ID26 the information in the individual and family records is not consistent
+Error: US26 INDIVIDUAL ID33 the information in the individual and family records is not consistent
+Error: US26 INDIVIDUAL ID28 the information in the individual and family records is not consistent
+
+
+Ran 2 tests in 0.020s
+
+OK
+
+Process finished with exit code 0
+
+// Result of US23_US31_testing.ged
+ERROR: US22 INDIVIDUAL ID11 has a repetitive ID
+ERROR: US11 INDIVIDUAL ID32 HAS DONE BIGAMY
+ERROR: US10 INDIVIDUAL () ID03 has married before the age of 14
+ERROR: US02 INDIVIDUAL ID03 has marriage Date before Birth
+ERROR: US10 INDIVIDUAL () ID41 has married before the age of 14
+ERROR: US10 INDIVIDUAL () ID38 has married before the age of 14
+ERROR: US10 INDIVIDUAL () ID39 has married before the age of 14
+ERROR: US10 INDIVIDUAL () ID40 has married before the age of 14
+ERROR: US05: marriage can't be after death for Priyanka /Puri/
+ERROR: US06: divorce can't be after death date for  Priyanka /Puri/
+ERROR: US10 INDIVIDUAL () ID10 has married before the age of 14
+ERROR: US02 INDIVIDUAL ID10 has marriage Date before Birth
+ERROR: US03 INDIVIDUAL () ID10 has Death date Date before Birth date
+ERROR: US07 INDIVIDUAL () ID32 has AGE greater than 150
+ERROR: US05: marriage can't be after death for Ajay /Kapoor/
+ERROR: US03 INDIVIDUAL () ID28 has Death date Date before Birth date
+ERROR: US05: marriage can't be after death for Divya /Puri/
+ERROR: US05: marriage can't be after death for Akhil /Kapoor/
+ERROR: US23 INDIVIDUAL ID33 Rahul /Kapoor/ does not have a unique name and birth date
+ERROR: US23 INDIVIDUAL ID39 T /Kapoor/ does not have a unique name and birth date
+ERROR: US23 INDIVIDUAL ID40 T /Kapoor/ does not have a unique name and birth date
+ERROR: US17 FAMILY F10 has marriage between descendants and their children
+ERROR: US21 INDIVIDUAL ID31 Rahul /Kapoor/ and INDIVIDUAL ID32 Sarath /Kapoor/ are of same gender but have married
+ERROR: US09 Family F12 has Child Rajeev with Birth date '09 AUG 1925' who was born after 9 months after Fathers Death '20 DEC 1921'
+ERROR: US34 INDIVIDUAL ID09 Nisha /Kapoor/ and INDIVIDUAL ID10 Ashwin /Mehrotra/ have large age difference
+ERROR: US18 INDIVIDUAL ID10 Ashwin and INDIVIDUAL ID09 Nisha are siblings but have married
+ERROR: US17 FAMILY F13 has marriage between descendants and their children
+ERROR: US12 FAMILY F13 Parents are too old
+ERROR: US08 Family F13 has Child Nisha with Birth date '02 AUG 1922' who was born 9 Months after Divorce of parents '07 APR 1882'
+ERROR: US09 Family F13 has Child Nisha with Birth date '02 AUG 1922' who was born after 9 months after Fathers Death '20 DEC 1919'
+ERROR: US09 Family F13 has Child Nisha with Birth date '02 AUG 1922' who was born after mothers death '01 OCT 1920'
+ERROR: US12 FAMILY F13 Parents are too old
+ERROR: US08 Family F13 has Child Ashwin with Birth date '03 AUG 1922' who was born 9 Months after Divorce of parents '07 APR 1882'
+ERROR: US09 Family F13 has Child Ashwin with Birth date '03 AUG 1922' who was born after 9 months after Fathers Death '20 DEC 1919'
+ERROR: US09 Family F13 has Child Ashwin with Birth date '03 AUG 1922' who was born after mothers death '01 OCT 1920'
+ERROR: US34 INDIVIDUAL ID08 Praveen /Mehrotra/ and INDIVIDUAL ID07 Priyanka /Puri/ have large age difference
+ERROR: US04 INDIVIDUAL ID08 Praveen /Mehrotra/ has Marriage After Divorce
+ERROR: US09 Family F14 has Child Kapoor with Birth date '16 JUN 1985' who was born after 9 months after Fathers Death '10 FEB 1950'
+ERROR: US16 INDIVIDUAL ID06 Arora/Mehrotra/ and INDIVIDUAL ID03 Kapoor /Arora/ have a Father-Child relationship but have different last names
+ERROR: US34 INDIVIDUAL ID05 Laxmi /Arora/ and INDIVIDUAL ID06 Arora /Mehrotra/ have large age difference
+ERROR: US17 FAMILY F15 has marriage between descendants and their children
+ERROR: US15 FAMILY F15 more than 15 siblings
+ERROR: US16 INDIVIDUAL ID03 Kapoor/Arora/ and INDIVIDUAL ID01 Anshul /Kapoor/ have a Father-Child relationship but have different last names
+ERROR: US14 Multiple births <= 5: No more than five siblings should be born at the same time in family with ID: F15.
+ERROR: US08 Family F17 has Child T with Birth date '10 MAY 2008' who was born before parents marriage '30 APR 2010'
+ERROR: US16 INDIVIDUAL ID36 R/Mehrotra/ and INDIVIDUAL ID38 T /Kapoor/ have a Father-Child relationship but have different last names
+ERROR: US08 Family F17 has Child T with Birth date '10 MAY 2008' who was born before parents marriage '30 APR 2010'
+ERROR: US16 INDIVIDUAL ID36 R/Mehrotra/ and INDIVIDUAL ID39 T /Kapoor/ have a Father-Child relationship but have different last names
+ERROR: US08 Family F18 has Child T with Birth date '10 MAY 2008' who was born before parents marriage '30 APR 2010'
+Error: US26 INDIVIDUAL ID18 the information in the individual and family records is not consistent
+Error: US26 INDIVIDUAL ID26 the information in the individual and family records is not consistent
+Error: US26 INDIVIDUAL ID33 the information in the individual and family records is not consistent
+Error: US26 INDIVIDUAL ID28 the information in the individual and family records is not consistent
+------------- Testing the listing of Singles in Gedcom File done -------------
+
+
+Ran 2 tests in 0.035s
+
+OK
+
+Process finished with exit code 0
+
+
+
+// Result of US26_US27_testing.ged
+Error: US26 INDIVIDUAL I90 the information in the individual and family records is not consistent
+------------- Testing of Include person's current age when listing individuals done -------------
+
+
+Ran 2 tests in 0.023s
+
+OK
+
+Process finished with exit code 0
+
+
+-------------------------------------------------------------------------------------------------------------
+
+// Sprint 2 Demonstration
+// Result of US08_US09_testing.ged
+ERROR: US08 Family F1 has Child Anshul with Birth date '18 SEP 1994' who was born 9 Months after Divorce of parents '26 NOV 1987'
+ERROR: US08 Family F1 has Child Akul with Birth date '18 JUL 1990' who was born 9 Months after Divorce of parents '26 NOV 1987'
+ERROR: US09 Family F3 has Child Gopal with Birth date '6 JAN 1940' who was born after mothers death '20 OCT 1939'
+ERROR: US09 Family F5 has Child Akhil with Birth date '15 NOV 1990' who was born after 9 months after Fathers Death '19 DEC 1989'
+ERROR: US09 Family F5 has Child Amal with Birth date '17 NOV 1992' who was born after 9 months after Fathers Death '19 DEC 1989'
+
+
+Ran 2 tests in 0.030s
+
+OK
+
+
+// Result of US11_US12_testing.ged
+ERROR: US11 INDIVIDUAL ID32 HAS DONE BIGAMY
+ERROR: US10 INDIVIDUAL () ID03 has married before the age of 14 
+ERROR: US02 INDIVIDUAL ID03 has marriage Date before Birth
+ERROR: US10 INDIVIDUAL () ID41 has married before the age of 14 
+ERROR: US10 INDIVIDUAL () ID38 has married before the age of 14 
+ERROR: US10 INDIVIDUAL () ID39 has married before the age of 14 
+ERROR: US10 INDIVIDUAL () ID40 has married before the age of 14 
+ERROR: US05: marriage can't be after death for Priyanka /Puri/
+ERROR: US06: divorce can't be after death date for  Priyanka /Puri/
+ERROR: US10 INDIVIDUAL () ID10 has married before the age of 14 
+ERROR: US02 INDIVIDUAL ID10 has marriage Date before Birth
+ERROR: US03 INDIVIDUAL () ID10 has Death date Date before Birth date
+ERROR: US07 INDIVIDUAL () ID32 has AGE greater than 150 
+ERROR: US05: marriage can't be after death for Ajay /Kapoor/
+ERROR: US03 INDIVIDUAL () ID28 has Death date Date before Birth date
+ERROR: US05: marriage can't be after death for Divya /Puri/
+ERROR: US05: marriage can't be after death for Akhil /Kapoor/
+ERROR: US17 FAMILY F10 has marriage between descendants and their children
+ERROR: US09 Family F12 has Child Rajeev with Birth date '09 AUG 1925' who was born after 9 months after Fathers Death '20 DEC 1921'
+ERROR: US17 FAMILY F13 has marriage between descendants and their children
+ERROR: US12 FAMILY F13 Parents are too old
+ERROR: US08 Family F13 has Child Nisha with Birth date '02 AUG 1922' who was born 9 Months after Divorce of parents '07 APR 1882'
+ERROR: US09 Family F13 has Child Nisha with Birth date '02 AUG 1922' who was born after 9 months after Fathers Death '20 DEC 1919'
+ERROR: US09 Family F13 has Child Nisha with Birth date '02 AUG 1922' who was born after mothers death '01 OCT 1920'
+ERROR: US12 FAMILY F13 Parents are too old
+ERROR: US08 Family F13 has Child Ashwin with Birth date '03 AUG 1922' who was born 9 Months after Divorce of parents '07 APR 1882'
+ERROR: US09 Family F13 has Child Ashwin with Birth date '03 AUG 1922' who was born after 9 months after Fathers Death '20 DEC 1919'
+ERROR: US09 Family F13 has Child Ashwin with Birth date '03 AUG 1922' who was born after mothers death '01 OCT 1920'
+ERROR: US04 INDIVIDUAL ID08 Praveen /Mehrotra/ has Marriage After Divorce
+ERROR: US09 Family F14 has Child Kapoor with Birth date '16 JUN 1985' who was born after 9 months after Fathers Death '10 FEB 1950'
+ERROR: US17 FAMILY F15 has marriage between descendants and their children
+ERROR: US15 FAMILY F15 more than 15 siblings
+ERROR: US14 Multiple births <= 5: No more than five siblings should be born at the same time in family with ID: F15.
+ERROR: US08 Family F17 has Child T with Birth date '10 MAY 2008' who was born before parents marriage '30 APR 2010'
+ERROR: US08 Family F17 has Child T with Birth date '10 MAY 2008' who was born before parents marriage '30 APR 2010'
+ERROR: US08 Family F18 has Child T with Birth date '10 MAY 2008' who was born before parents marriage '30 APR 2010'
+
+
+Ran 2 tests in 0.018s
+
+OK
+
+Process finished with exit code 0
+
+
+
+// Result of US13_US14_testing.ged
+ERROR: US10 INDIVIDUAL () I2 has married before the age of 14 
+ERROR: US02 INDIVIDUAL I2 has marriage Date before Birth
+ERROR: US01 INDIVIDUAL () I30 has Birthdate in future
+ERROR: US17 FAMILY F1 has marriage between descendants and their children
+ERROR: US13 Siblings spacing: Birth dates of siblings with ID ['I7', 'I6'], should be more than 8 months apart or less than2 days apart, like twins
+ERROR: US14 Multiple births <= 5: No more than five siblings should be born at the same time in family with ID: F1.
+
+
+Ran 2 tests in 0.027s
+
+OK
+
+Process finished with exit code 0
+
+
+
+// Result of US15_US17_testing.ged
+ERROR: US11 INDIVIDUAL ID32 HAS DONE BIGAMY
+ERROR: US10 INDIVIDUAL () ID03 has married before the age of 14 
+ERROR: US02 INDIVIDUAL ID03 has marriage Date before Birth
+ERROR: US10 INDIVIDUAL () ID41 has married before the age of 14 
+ERROR: US10 INDIVIDUAL () ID38 has married before the age of 14 
+ERROR: US10 INDIVIDUAL () ID39 has married before the age of 14 
+ERROR: US10 INDIVIDUAL () ID40 has married before the age of 14 
+ERROR: US05: marriage can't be after death for Priyanka /Puri/
+ERROR: US06: divorce can't be after death date for  Priyanka /Puri/
+ERROR: US10 INDIVIDUAL () ID10 has married before the age of 14 
+ERROR: US02 INDIVIDUAL ID10 has marriage Date before Birth
+ERROR: US03 INDIVIDUAL () ID10 has Death date Date before Birth date
+ERROR: US07 INDIVIDUAL () ID32 has AGE greater than 150 
+ERROR: US05: marriage can't be after death for Ajay /Kapoor/
+ERROR: US03 INDIVIDUAL () ID28 has Death date Date before Birth date
+ERROR: US05: marriage can't be after death for Divya /Puri/
+ERROR: US05: marriage can't be after death for Akhil /Kapoor/
+ERROR: US17 FAMILY F10 has marriage between descendants and their children
+ERROR: US09 Family F12 has Child Rajeev with Birth date '09 AUG 1925' who was born after 9 months after Fathers Death '20 DEC 1921'
+ERROR: US17 FAMILY F13 has marriage between descendants and their children
+ERROR: US12 FAMILY F13 Parents are too old
+ERROR: US08 Family F13 has Child Nisha with Birth date '02 AUG 1922' who was born 9 Months after Divorce of parents '07 APR 1882'
+ERROR: US09 Family F13 has Child Nisha with Birth date '02 AUG 1922' who was born after 9 months after Fathers Death '20 DEC 1919'
+ERROR: US09 Family F13 has Child Nisha with Birth date '02 AUG 1922' who was born after mothers death '01 OCT 1920'
+ERROR: US12 FAMILY F13 Parents are too old
+ERROR: US08 Family F13 has Child Ashwin with Birth date '03 AUG 1922' who was born 9 Months after Divorce of parents '07 APR 1882'
+ERROR: US09 Family F13 has Child Ashwin with Birth date '03 AUG 1922' who was born after 9 months after Fathers Death '20 DEC 1919'
+ERROR: US09 Family F13 has Child Ashwin with Birth date '03 AUG 1922' who was born after mothers death '01 OCT 1920'
+ERROR: US04 INDIVIDUAL ID08 Praveen /Mehrotra/ has Marriage After Divorce
+ERROR: US09 Family F14 has Child Kapoor with Birth date '16 JUN 1985' who was born after 9 months after Fathers Death '10 FEB 1950'
+ERROR: US17 FAMILY F15 has marriage between descendants and their children
+ERROR: US15 FAMILY F15 more than 15 siblings
+ERROR: US14 Multiple births <= 5: No more than five siblings should be born at the same time in family with ID: F15.
+ERROR: US08 Family F17 has Child T with Birth date '10 MAY 2008' who was born before parents marriage '30 APR 2010'
+ERROR: US08 Family F17 has Child T with Birth date '10 MAY 2008' who was born before parents marriage '30 APR 2010'
+ERROR: US08 Family F18 has Child T with Birth date '10 MAY 2008' who was born before parents marriage '30 APR 2010'
+
+
+Ran 2 tests in 0.053s
+
+OK
+
+Process finished with exit code 0
+
+-------------------------------------------------------------------------------------------------------------
+
+
+// Sprint 1 Demonstration
+
+// Result of US01_US02_testing.ged
+ERROR: US10 INDIVIDUAL () I2 has married before the age of 14
+ERROR: US02 INDIVIDUAL I2 has marriage Date before Birth
+ERROR: US03 INDIVIDUAL () I4 has death date before birth date
+ERROR: US03 INDIVIDUAL () I16 has death date before birth date
+ERROR: US01 INDIVIDUAL () I30 has Birthdate in future
+test_date_before_current_date (__main__.TestGedcom)
+Test if Dates (birth, marriage, divorce, death) should not be after the current date ... ok
+test_marriage_before_birth_date (__main__.TestGedcom)
+Test if marriage date is before birth date ... ok
+
+
+// Result of US03_US04_testing.ged
+ERROR: US03 INDIVIDUAL () I4 has death date before birth date
+ERROR: US05: marriage can't be after death for Laxmi Narayan /Kapoor/
+ERROR: US03 INDIVIDUAL () I16 has death date before birth date
+ERROR: US04 INDIVIDUAL I2 Anil /Kapoor/ has Marriage After Divorce
+test_death_before_birth (__main__.TestGedcom)
+Test if Death is before birth ... ok
+test_marriage_occurs_beforedivorce (__main__.TestGedcom)
+Test if Marriage occurs before divorce of spouses, and divorce can only occur after marriage ... ok
+
+
+// Result of US05_US06_testing.ged
+ERROR: US06: divorce can't be after death date for  Anil /Kapoor/
+ERROR: US03 INDIVIDUAL () I2 has death date before birth date
+ERROR: US03 INDIVIDUAL () I4 has death date before birth date
+ERROR: US05: marriage can't be after death for Laxmi Narayan /Kapoor/
+ERROR: US03 INDIVIDUAL () I16 has death date before birth date
+ERROR: US05: marriage can't be after death for Shakuntala /Kapoor/
+test_divorce_before_death (__main__.TestGedcom)
+to test if the divorce date is not before marriage date ... ok
+test_marriage_before_death_date (__main__.TestGedcom)
+to test if the death date is not before marriage date ... ok
+
+
+// Result of US07_US08_testing.ged
+ERROR: US07 INDIVIDUAL () I2 has AGE greater than 150
+ERROR: US10 INDIVIDUAL () I4 has married before the age of 14
+ERROR: US03 INDIVIDUAL () I4 has death date before birth date
+ERROR: US03 INDIVIDUAL () I16 has death date before birth date
+test_age_150 (__main__.TestGedcom)
+Test if Dates (birth, marriage, divorce, death) should not be after the current date ... ok
+test_married_before_14 (__main__.TestGedcom)
+Test if Dates (birth, marriage, divorce, death) should not be after the current date ... ok
+
+
+
+
+
