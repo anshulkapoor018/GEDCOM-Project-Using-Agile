@@ -1,4 +1,4 @@
-from Sprint3_Main import Gedcom
+from Sprint4_Main import Gedcom
 import unittest
 
 
@@ -8,6 +8,7 @@ class TestGedcom(unittest.TestCase):
         """ Set up objects with filenames """
         cls.x = Gedcom("US23_US31_testing.ged", "n")
         cls.errorlog = cls.x.analyze_gedcom_file()
+        cls.single = cls.x.singlesList
 
 
     def test_uniquenamebirthdate(self):
@@ -15,10 +16,7 @@ class TestGedcom(unittest.TestCase):
 
     def test_listingSingles(self):
         """ To Test US31_Include_individual_ages while listing """
-        print("------------- Testing the listing of Singles in Gedcom File done -------------")
-        g = Gedcom("../gedcomData.ged", "y")
-        g.analyze_gedcom_file()
-        self.assertEqual(g.singlesList, ['Anu /Kapoor/', 'Prachi /Kapoor/'])
+        self.assertEqual(self.single, ['Rajeev /Mehrotra/'])
 
 
 if __name__ == '__main__':

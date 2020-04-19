@@ -44,7 +44,7 @@ class Gedcom:
         """ Function to check if file is valid """
         if self.file.endswith("ged"):
             self.check_gedcom_file(self.open_file())
-            # return self.output, self.individualdata, self.familydata
+
             errorLog = self.date_calculation()
             return errorLog
         else:
@@ -375,7 +375,8 @@ class Gedcom:
                     self.recentDeceased.append(name)
                     recent_deceased_list.append(name)
                     recent_test_deceased.append(name)
-            #US_38
+
+            # US_38
             #########################
             if alive is True:
                 present_day = datetime.datetime.now()
@@ -414,11 +415,13 @@ class Gedcom:
                                                                                                          key][
                                                                                                          "NAME"]))
                     self.errorLog["US36_RecentDeceasedList"] += 1
-            #US__38  ############################
+            # US__38  ############################
             for k in recent_birthday_list:
                 if k not in recent_test_birthday_list:
-                    print("ERROR: US38 INDIVIDUAL {} {} not in the list of recent birthday".format(key, self.individualdata[key][
-                        "NAME"]))
+                    print("ERROR: US38 INDIVIDUAL {} {} not in the list of recent birthday".format(key,
+                                                                                                   self.individualdata[
+                                                                                                       key][
+                                                                                                       "NAME"]))
                     self.errorLog["US38_BirthdayList"] += 1
             #################################
 
@@ -473,19 +476,22 @@ class Gedcom:
         test_multiple = []
         age_list = []
         test_order = []
+        sibling_age_list_by_family = {}
 
         US26_IDs = defaultdict(int)
 
         for key in sorted(self.familydata.keys()):
 
             value = self.familydata[key]
-
+            age_list = []
             husband_individiual_id = value["HUSB"]
             wife_individiual_id = value["WIFE"]
             children = value["CHIL"]
-            uniquenameslist = [] #US 24
-            #US 24###############
-            spousename_plus_marriagedates = self.individualdata[husband_individiual_id]["NAME"] + self.individualdata[wife_individiual_id]["NAME"] + self.individualdata[husband_individiual_id]["MARRDATE"]
+            uniquenameslist = []  # US 24
+            # US 24###############
+            spousename_plus_marriagedates = self.individualdata[husband_individiual_id]["NAME"] + \
+                                            self.individualdata[wife_individiual_id]["NAME"] + \
+                                            self.individualdata[husband_individiual_id]["MARRDATE"]
             if spousename_plus_marriagedates not in self.unique_families_by_spouses:
                 self.unique_families_by_spouses.append(spousename_plus_marriagedates)
             else:
@@ -508,6 +514,9 @@ class Gedcom:
                 if len(children) >= 2:
                     multiple_births.append(i)
                     test_multiple.append(i)
+            
+            if key not in sibling_age_list_by_family:
+                sibling_age_list_by_family[key] = age_list
 
             try:
                 marriage = self.individualdata[husband_individiual_id]["MARRDATE"]
@@ -660,7 +669,7 @@ class Gedcom:
                 [key, marriage, divorce, husband_individiual_id, husband_name, wife_individiual_id, wife_name, child])
 
             age_list.sort(reverse=True)
-            age_list[::-1]
+            # age_list[::-1]
 
             if age_list != test_order:
                 # print("ERROR: US28 Age of siblings are not in order ", test_order)
@@ -677,9 +686,15 @@ class Gedcom:
         for IDs in US26_IDs.keys():
             if IDs not in self.individualdata.keys():
                 self.errorLog['US26_Corresponding_entries'] += 1
-                print(
-                    "Error: US26 INDIVIDUAL {} the information in the individual and family records is not consistent"
-                    .format(indiv_id))
+                print("Error: US26 INDIVIDUAL {} the information in the individual and family records is not consistent".format(self.individualdata[key]["NAME"]))
+
+        print("US29: List all deceased individuals in a GEDCOM file - {}".format(self.expiredPeople))
+        print("US28: List siblings in families by decreasing age, i.e. oldest siblings first - {}".format(sibling_age_list_by_family))
+        print("US31: List all living people over 30 who have never been married in a GEDCOM file - {}".format(self.singlesList))
+        print("US36: List all people in a GEDCOM file who died in the last 30 days - {}".format(
+            self.recentDeceased))
+        print("US38: List all living people in a GEDCOM file whose birthdays occur in the next 30 days - {}".format(
+            self.BirthdayList))
 
     def checkMarriageBeforeDeath(self, death_date, marriage, key):
         """ if the death is before marriage, raise KeyError """
@@ -748,8 +763,9 @@ def main():
     pretty = input("Do you want pretty table? y/n \n")
     g = Gedcom(file_name, pretty)
     print(g.analyze_gedcom_file())
-    print(g.prettytableindividuals)
-    print(g.prettytablefamily)
+    if pretty == "y":
+        print(g.prettytableindividuals)
+        print(g.prettytablefamily)
 
 
 if __name__ == '__main__':
