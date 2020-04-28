@@ -1,4 +1,4 @@
-# GEDCOM-Project-SSW_555_A-Agile
+# GEDCOM-Project-Using_A-Agile
 GEDCOM is a standard format for genealogy data developed by The Church of Jesus Christ of Latter-day Saints. 
 GEDCOM identifies two major entities: individuals and families. GEDCOM allows you to describe the following characteristics of individuals:
 •Unique individual ID
